@@ -1,0 +1,26 @@
+@using SalesManagement.Web.Models
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "L?i";
+}
+
+<h1 class="text-danger">L?i.</h1>
+<h2 class="text-danger">�� x?y ra l?i khi x? l� y�u c?u c?a b?n.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>ID Y�u c?u:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<h3>Ch? d? ph�t tri?n</h3>
+<p>
+    Chuy?n sang m�i tru?ng <strong>Development</strong> s? hi?n th? th�ng tin chi ti?t hon v? l?i d� x?y ra.
+</p>
+<p>
+    <strong>M�i tru?ng Development kh�ng n�n du?c k�ch ho?t cho c�c ?ng d?ng d� tri?n khai.</strong>
+    N� c� th? d?n d?n vi?c hi?n th? th�ng tin nh?y c?m t? c�c ngo?i l? cho ngu?i d�ng cu?i.
+    �? g? l?i c?c b?, h�y k�ch ho?t m�i tru?ng <strong>Development</strong> b?ng c�ch d?t bi?n m�i tru?ng <strong>ASPNETCORE_ENVIRONMENT</strong> th�nh <strong>Development</strong>
+    v� kh?i d?ng l?i ?ng d?ng.
+</p>

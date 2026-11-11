@@ -1,0 +1,354 @@
+@* Theme Switcher Component *@
+<div class="theme-switcher">
+    <button class="theme-switcher-btn" id="themeSwitcherBtn" title="Thay đổi giao diện">
+        <i class="fas fa-palette"></i>
+    </button>
+    
+    <div class="theme-switcher-menu" id="themeSwitcherMenu">
+        <h6 class="mb-3 fw-bold">Chọn giao diện</h6>
+        
+        <div class="theme-options">
+            <div class="theme-option" data-theme="default">
+                <div class="theme-color-preview" style="background: #2563eb;"></div>
+                <span>Xanh dương (Mặc định)</span>
+            </div>
+            
+            <div class="theme-option" data-theme="green">
+                <div class="theme-color-preview" style="background: #10b981;"></div>
+                <span>Xanh lá (Tự nhiên)</span>
+            </div>
+            
+            <div class="theme-option" data-theme="purple">
+                <div class="theme-color-preview" style="background: #8b5cf6;"></div>
+                <span>Tím (Sáng tạo)</span>
+            </div>
+            
+            <div class="theme-option" data-theme="orange">
+                <div class="theme-color-preview" style="background: #f97316;"></div>
+                <span>Cam (Năng động)</span>
+            </div>
+            
+            <div class="theme-option" data-theme="red">
+                <div class="theme-color-preview" style="background: #dc2626;"></div>
+                <span>Đỏ (Mạnh mẽ)</span>
+            </div>
+            
+            <div class="theme-option" data-theme="dark">
+                <div class="theme-color-preview" style="background: #1e293b;"></div>
+                <span>Tối (Dark Mode)</span>
+            </div>
+        </div>
+        
+        <hr class="my-3">
+        
+        <h6 class="mb-3 fw-bold">Bố cục</h6>
+        <div class="layout-options">
+            <div class="theme-option" data-layout="default">
+                <i class="fas fa-th-large"></i>
+                <span>Mặc định</span>
+            </div>
+            
+            <div class="theme-option" data-layout="compact">
+                <i class="fas fa-compress"></i>
+                <span>Thu gọn</span>
+            </div>
+            
+            <div class="theme-option" data-layout="comfortable">
+                <i class="fas fa-expand"></i>
+                <span>Thoải mái</span>
+            </div>
+        </div>
+        
+        <hr class="my-3">
+        
+        <div class="d-grid">
+            <button class="btn btn-sm btn-outline-secondary" id="resetTheme">
+                <i class="fas fa-undo me-1"></i> Đặt lại mặc định
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .theme-switcher {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+
+    .theme-switcher-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1.25rem;
+    }
+
+    .theme-switcher-btn:hover {
+        transform: scale(1.1) rotate(15deg);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    .theme-switcher-menu {
+        position: absolute;
+        bottom: 70px;
+        right: 0;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        padding: 1.25rem;
+        min-width: 280px;
+        max-height: 500px;
+        overflow-y: auto;
+        display: none;
+        border: 1px solid #e2e8f0;
+    }
+
+    .theme-switcher-menu.active {
+        display: block;
+        animation: slideUp 0.3s ease;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .theme-option {
+        padding: 0.75rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .theme-option:hover {
+        background: #f1f5f9;
+        transform: translateX(4px);
+    }
+
+    .theme-option.active {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        font-weight: 600;
+    }
+
+    .theme-color-preview {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        flex-shrink: 0;
+    }
+
+    .theme-option i {
+        width: 28px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .theme-switcher-menu h6 {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+    }
+
+    .theme-switcher-menu hr {
+        margin: 1rem 0;
+        opacity: 0.2;
+    }
+
+    [data-theme="dark"] .theme-switcher-menu {
+        background: #1e293b;
+        color: #e2e8f0;
+        border-color: #334155;
+    }
+
+    [data-theme="dark"] .theme-option:hover {
+        background: #334155;
+    }
+
+    [data-theme="dark"] .theme-switcher-menu h6 {
+        color: #94a3b8;
+    }
+
+    @@media (max-width: 768px) {
+        .theme-switcher {
+            bottom: 15px;
+            right: 15px;
+        }
+
+        .theme-switcher-btn {
+            width: 48px;
+            height: 48px;
+            font-size: 1.1rem;
+        }
+
+        .theme-switcher-menu {
+            right: 0;
+            min-width: 260px;
+        }
+    }
+
+    /* Print: Hide theme switcher */
+    @@media print {
+        .theme-switcher {
+            display: none !important;
+        }
+    }
+</style>
+
+<script>
+    (function() {
+        const themeSwitcherBtn = document.getElementById('themeSwitcherBtn');
+        const themeSwitcherMenu = document.getElementById('themeSwitcherMenu');
+        const resetThemeBtn = document.getElementById('resetTheme');
+        const body = document.body;
+
+        // Toggle menu
+        themeSwitcherBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            themeSwitcherMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!themeSwitcherMenu.contains(e.target) && e.target !== themeSwitcherBtn) {
+                themeSwitcherMenu.classList.remove('active');
+            }
+        });
+
+        // Theme selection
+        document.querySelectorAll('.theme-option[data-theme]').forEach(option => {
+            option.addEventListener('click', function() {
+                const theme = this.dataset.theme;
+                
+                // Remove active class from all theme options
+                document.querySelectorAll('.theme-option[data-theme]').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active class to selected option
+                this.classList.add('active');
+                
+                // Apply theme
+                if (theme === 'default') {
+                    body.removeAttribute('data-theme');
+                    localStorage.removeItem('dashboardTheme');
+                } else {
+                    body.setAttribute('data-theme', theme);
+                    localStorage.setItem('dashboardTheme', theme);
+                }
+                
+                // Show notification
+                showNotification('Đã thay đổi giao diện thành công!', 'success');
+            });
+        });
+
+        // Layout selection
+        document.querySelectorAll('.theme-option[data-layout]').forEach(option => {
+            option.addEventListener('click', function() {
+                const layout = this.dataset.layout;
+                
+                // Remove active class from all layout options
+                document.querySelectorAll('.theme-option[data-layout]').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active class to selected option
+                this.classList.add('active');
+                
+                // Apply layout
+                if (layout === 'default') {
+                    body.removeAttribute('data-layout');
+                    localStorage.removeItem('dashboardLayout');
+                } else {
+                    body.setAttribute('data-layout', layout);
+                    localStorage.setItem('dashboardLayout', layout);
+                }
+                
+                // Show notification
+                showNotification('Đã thay đổi bố cục thành công!', 'success');
+            });
+        });
+
+        // Reset theme
+        resetThemeBtn.addEventListener('click', function() {
+            body.removeAttribute('data-theme');
+            body.removeAttribute('data-layout');
+            localStorage.removeItem('dashboardTheme');
+            localStorage.removeItem('dashboardLayout');
+            
+            // Remove active class from all options
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            // Set default as active
+            document.querySelector('.theme-option[data-theme="default"]')?.classList.add('active');
+            document.querySelector('.theme-option[data-layout="default"]')?.classList.add('active');
+            
+            showNotification('Đã đặt lại giao diện mặc định!', 'info');
+        });
+
+        // Load saved preferences
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('dashboardTheme');
+            const savedLayout = localStorage.getItem('dashboardLayout');
+            
+            if (savedTheme) {
+                body.setAttribute('data-theme', savedTheme);
+                document.querySelector(`.theme-option[data-theme="${savedTheme}"]`)?.classList.add('active');
+            } else {
+                document.querySelector('.theme-option[data-theme="default"]')?.classList.add('active');
+            }
+            
+            if (savedLayout) {
+                body.setAttribute('data-layout', savedLayout);
+                document.querySelector(`.theme-option[data-layout="${savedLayout}"]`)?.classList.add('active');
+            } else {
+                document.querySelector('.theme-option[data-layout="default"]')?.classList.add('active');
+            }
+        }
+
+        // Notification helper
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; animation: slideInRight 0.3s ease;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        loadPreferences();
+    })();
+</script>

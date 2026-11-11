@@ -1,0 +1,232 @@
+@model SalesManagement.Web.Areas.Admin.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Quản trị hệ thống";
+    Layout = "_AdminLayout";
+}
+
+<div class="row g-4 mb-4">
+    <!-- Stats Cards -->
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="card-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+            </div>
+            <h6 class="text-muted mb-1 text-uppercase small ls-1">Doanh thu tổng</h6>
+            <h3 class="fw-bold mb-0">@(Model.TotalRevenue.ToString("N0")) VNĐ</h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="card-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+            </div>
+            <h6 class="text-muted mb-1 text-uppercase small ls-1">Tổng đơn hàng</h6>
+            <h3 class="fw-bold mb-0">@Model.TotalOrders</h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="card-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+            </div>
+            <h6 class="text-muted mb-1 text-uppercase small ls-1">Đang xử lý</h6>
+            <h3 class="fw-bold mb-0">@Model.PendingOrders</h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="card-icon bg-info bg-opacity-10 text-info">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+            <h6 class="text-muted mb-1 text-uppercase small ls-1">Người dùng mới</h6>
+            <h3 class="fw-bold mb-0">@Model.NewUsers</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card-modern">
+            <h5 class="mb-4 text-dark fw-bold">Biểu đồ doanh thu</h5>
+            <div class="chart-area" style="height: 350px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card-modern">
+            <h5 class="mb-4 text-dark fw-bold">Top danh mục</h5>
+            <div class="chart-area d-flex justify-content-center" style="height: 300px;">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-modern-wrapper">
+            <h5 class="mb-4 text-dark fw-bold ps-2">Giao dịch gần đây</h5>
+             <div class="table-responsive">
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Số tiền</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td class="fw-bold text-primary">#@order.OrderId</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                            <i class="bi bi-person text-secondary"></i>
+                                        </div>
+                                        <span>@order.Customer?.FullName</span>
+                                    </div>
+                                </td>
+                                <td>@(order.OrderDate.HasValue ? order.OrderDate.Value.ToString("dd/MM/yyyy HH:mm") : "")</td>
+                                <td class="fw-bold">@((order.TotalAmount ?? 0).ToString("N0")) ₫</td>
+                                <td>
+                                    @if(order.Status == "Completed") { <span class="badge-modern badge-success-modern">Hoàn thành</span> }
+                                    else if(order.Status == "Processing") { <span class="badge-modern badge-info-modern">Đang xử lý</span> }
+                                    else if(order.Status == "Cancelled") { <span class="badge-modern badge-danger-modern">Đã hủy</span> }
+                                    else if(order.Status == "Pending") { <span class="badge-modern badge-warning-modern">Chờ xử lý</span> }
+                                    else { <span class="badge-modern badge-secondary">@order.Status</span> }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-area="" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        <i class="bi bi-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        @if(!Model.RecentOrders.Any())
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-4">Chưa có giao dịch nào</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.font.family = 'Inter';
+        Chart.defaults.color = '#858796';
+
+        // Revenue Chart (Line)
+        var ctx = document.getElementById("revenueChart");
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["Th 1", "Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7", "Th 8", "Th 9", "Th 10", "Th 11", "Th 12"],
+                datasets: [{
+                    label: "Doanh thu",
+                    lineTension: 0.4,
+                    backgroundColor: "rgba(67, 97, 238, 0.05)",
+                    borderColor: "rgba(67, 97, 238, 1)",
+                    pointRadius: 4,
+                    pointBackgroundColor: "#fff",
+                    pointBorderColor: "rgba(67, 97, 238, 1)",
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: "rgba(67, 97, 238, 1)",
+                    pointHoverBorderColor: "#fff",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: @Html.Raw(Json.Serialize(Model.RevenueData)),
+                    fill: true
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                         backgroundColor: '#232d3f',
+                         titleFont: { size: 13 },
+                         bodyFont: { size: 13 },
+                         padding: 10,
+                         cornerRadius: 8,
+                         displayColors: false,
+                         callbacks: {
+                            label: function(context) {
+                                return new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { color: '#8c9097' }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#8c9097',
+                            padding: 10,
+                            callback: function(value) { return value.toLocaleString() + ' ₫'; }
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.03)",
+                            borderDash: [5, 5],
+                            drawBorder: false
+                        }
+                    },
+                }
+            }
+        });
+
+        // Pie Chart
+        var ctxPool = document.getElementById("pieChart");
+        var myPieChart = new Chart(ctxPool, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.CategoryLabels)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.CategoryData)),
+                    backgroundColor: ['#4361ee', '#2bbd7e', '#f7b731', '#f83f37', '#0099ff', '#8c9097'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            },
+        });
+    </script>
+}

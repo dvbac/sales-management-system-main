@@ -1,0 +1,125 @@
+@model SalesManagement.DAL.Entities.Customer
+
+@{
+    ViewData["Title"] = "Hồ sơ khách hàng";
+    Layout = "_SaleLayout";
+}
+
+<div class="row g-4">
+    <!-- Profile Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; overflow: hidden;">
+            <div class="card-body text-center pt-5 pb-4">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 border border-4 border-white shadow" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                    @Model.FullName?.Substring(0,1).ToUpper()
+                </div>
+                <h5 class="fw-bold mb-1">@Model.FullName</h5>
+                <span class="badge bg-warning text-dark mb-3">@Model.CustomerLevel</span>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3"><i class="bi bi-envelope"></i> Gửi Email</button>
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3"><i class="bi bi-phone"></i> Gọi điện</button>
+                </div>
+
+                <div class="row text-center border-top pt-4">
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-0">@Model.Orders.Count</h6>
+                        <small class="text-muted">Đơn hàng</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="fw-bold mb-0">Thông tin chi tiết</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Email</small>
+                    <span>@Model.Email</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Số điện thoại</small>
+                    <span>@Model.PhoneNumber</span>
+                </div>
+                 <div class="mb-3">
+                    <small class="text-muted d-block">Địa chỉ</small>
+                    <span>@Model.Address</span>
+                </div>
+                 <div class="mb-3">
+                    <small class="text-muted d-block">Loại tài khoản</small>
+                    <span>@Model.Type</span>
+                </div>
+                 <div class="mb-3">
+                    <small class="text-muted d-block">Ngày tạo</small>
+                    <span>@Model.CreatedDate?.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">Ghi chú</small>
+                    <p class="small text-muted mb-0">@Model.Note</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="fw-bold mb-0">Lịch sử đơn hàng</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Orders != null && Model.Orders.Any())
+                            {
+                                foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+                                {
+                                    <tr>
+                                        <td class="ps-4 fw-bold">#@order.OrderId</td>
+                                        <td>@order.OrderDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                                         <td class="fw-bold text-primary">@((order.TotalAmount ?? 0m).ToString("N0")) ₫</td>
+                                        <td>
+                                            @{
+                                                var badgeClass = order.Status switch
+                                                {
+                                                    "Completed" => "bg-success",
+                                                    "Paid" => "bg-success",
+                                                    "Confirmed" => "bg-info",
+                                                    "Draft" => "bg-secondary",
+                                                    "Cancelled" => "bg-danger",
+                                                    _ => "bg-light text-dark"
+                                                };
+                                            }
+                                            <span class="badge @badgeClass bg-opacity-75">@order.Status</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">Khách hàng chưa có đơn hàng nào</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

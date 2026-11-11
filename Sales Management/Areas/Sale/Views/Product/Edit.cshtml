@@ -1,0 +1,107 @@
+@model SalesManagement.DAL.Entities.Product
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="fw-bold mb-0">Chỉnh sửa sản phẩm: @Model.Name</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="ProductId" />
+                    <input type="hidden" asp-for="CreatedDate" />
+                    <input type="hidden" asp-for="CreatedBy" />
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                             <div class="form-group mb-3">
+                                <label asp-for="Code" class="form-label fw-bold">Mã sản phẩm</label>
+                                <input asp-for="Code" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">Danh mục</label>
+                                <select asp-for="CategoryId" class ="form-select" asp-items="ViewBag.CategoryId"></select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                             <div class="form-group mb-3">
+                                <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ImportPrice" class="form-label fw-bold">Giá nhập</label>
+                                <input asp-for="ImportPrice" class="form-control" type="number" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                             <div class="form-group mb-3">
+                                <label asp-for="SellingPrice" class="form-label fw-bold">Giá bán</label>
+                                <input asp-for="SellingPrice" class="form-control" type="number" />
+                                <span asp-validation-for="SellingPrice" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="StockQuantity" class="form-label fw-bold">Số lượng tồn</label>
+                                <input asp-for="StockQuantity" class="form-control" type="number" />
+                            </div>
+                        </div>
+                        
+                         <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Status" class="form-label fw-bold">Trạng thái</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Active">Đang bán</option>
+                                    <option value="Inactive">Ngừng bán</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">Ảnh sản phẩm (URL)</label>
+                                <input name="ImageUrl" value="@ViewData["ImageUrl"]" class="form-control" placeholder="https://example.com/image.jpg" />
+                                @if(ViewData["ImageUrl"] != null)
+                                {
+                                    <div class="mt-2">
+                                        <img src="@ViewData["ImageUrl"]" style="height: 100px; border-radius: 8px;" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                             <div class="form-group mb-3">
+                                <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

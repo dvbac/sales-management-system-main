@@ -1,0 +1,136 @@
+@model SalesManagement.DAL.Entities.Product
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4 fw-bold">Thêm sản phẩm mới</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="AdminProducts" asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item active">Thêm mới</li>
+    </ol>
+
+    <div class="card mb-4 border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3">
+            <i class="fas fa-plus me-1 text-primary"></i>
+            <span class="fw-bold">Thông tin sản phẩm</span>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Code" class="control-label fw-bold">Mã sản phẩm</label>
+                            <input asp-for="Code" class="form-control" placeholder="Nhập mã sản phẩm" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="control-label fw-bold">Tên sản phẩm</label>
+                            <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                         <div class="form-group mb-3">
+                            <label asp-for="CategoryId" class="control-label fw-bold">Danh mục</label>
+                            <select asp-for="CategoryId" class ="form-select" asp-items="ViewBag.CategoryId"></select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label fw-bold">Hình ảnh (Có thể chọn nhiều)</label>
+                            <input type="file" name="imageFiles" id="imageInput" class="form-control" multiple accept="image/*" />
+                            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+
+                        <!-- Add a script for image preview -->
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const imageInput = document.getElementById('imageInput');
+                                const previewContainer = document.getElementById('imagePreviewContainer');
+
+                                imageInput.addEventListener('change', function(event) {
+                                    previewContainer.innerHTML = '';
+                                    const files = event.target.files;
+
+                                    if (files) {
+                                        Array.from(files).forEach(file => {
+                                            if (file.type.startsWith('image/')) {
+                                                const reader = new FileReader();
+                                                reader.onload = function(e) {
+                                                    const imgWrapper = document.createElement('div');
+                                                    imgWrapper.className = 'position-relative';
+                                                    
+                                                    const img = document.createElement('img');
+                                                    img.src = e.target.result;
+                                                    img.className = 'img-thumbnail shadow-sm';
+                                                    img.style = 'width: 100px; height: 100px; object-fit: cover;';
+                                                    
+                                                    imgWrapper.appendChild(img);
+                                                    previewContainer.appendChild(imgWrapper);
+                                                }
+                                                reader.readAsDataURL(file);
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                         <div class="form-group mb-3">
+                            <label asp-for="SellingPrice" class="control-label fw-bold">Giá bán (VNĐ)</label>
+                            <input asp-for="SellingPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="SellingPrice" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="ImportPrice" class="control-label fw-bold">Giá nhập</label>
+                            <input asp-for="ImportPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="ImportPrice" class="text-danger"></span>
+                        </div>
+                        
+                     
+
+                        <div class="form-group mb-3">
+                            <label asp-for="StockQuantity" class="control-label fw-bold">Số lượng tồn</label>
+                            <input asp-for="StockQuantity" class="form-control" type="number" />
+                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                        </div>
+
+                         <div class="form-group mb-3">
+                            <label asp-for="Status" class="control-label fw-bold">Trạng thái</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Hoạt động</option>
+                                <option value="Inactive">Ngừng hoạt động</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                         <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label fw-bold">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3 text-end">
+                    <a asp-action="Index" class="btn btn-secondary me-2">Hủy</a>
+                    <input type="submit" value="Tạo sản phẩm" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

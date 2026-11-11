@@ -1,0 +1,404 @@
+@model SalesManagement.Web.Models.HomeProductViewModel
+@{
+    ViewData["Title"] = "Quản Lý Bán Hàng Hiện Đại";
+    ViewData["HideHeaderSpacer"] = true;
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    string loginUrl = Url.Action("Login", "Account", new { returnUrl = Context.Request.Path + Context.Request.QueryString })!;
+}
+
+<style>
+    .category-filter-item {
+        cursor: pointer;
+        white-space: nowrap;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        transition: all 0.3s;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        font-weight: 500;
+        scroll-snap-align: start;
+    }
+    .category-filter-item:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: rgba(var(--primary-rgb), 0.05);
+    }
+    .category-filter-item.active {
+        background: var(--primary-color);
+        color: #fff;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+    }
+    .categories-wrapper {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding: 0.5rem 0.25rem 1.5rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        scroll-snap-type: x mandatory;
+    }
+    .categories-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+    .loading-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        border-radius: 12px;
+    }
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .transition-container {
+        transition: opacity 0.3s ease-in-out;
+    }
+    .transition-container.fade-out {
+        opacity: 0.4;
+    }
+</style>
+
+<section class="hero-section">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge badge-primary-modern mb-3 bg-white text-primary fw-bold px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-stars"></i> Mới nhất 2026
+                </span>
+                <h1 class="hero-title">
+                    Khám Phá Sản Phẩm <br>
+                    <span class="text-gradient">Chất Lượng Hôm Nay</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Duyệt qua bộ sưu tập phong phú các mặt hàng cao cấp của chúng tôi. Từ công nghệ mới nhất đến nhu yếu phẩm hàng ngày, chúng tôi có tất cả những gì bạn cần.
+                </p>
+                <div class="hero-actions">
+                    <a href="#products" class="btn btn-primary-modern btn-lg">
+                        Mua Ngay <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-5 mt-lg-0">
+                <div class="hero-image-wrapper">
+                    <img src="https://t3.ftcdn.net/jpg/02/41/43/18/360_F_241431868_8DFQpCcmpEPVG0UvopdztOAd4a6Rqsoo.jpg"
+                         alt="Shopping Preview" class="hero-image bg-white p-2">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 border-top border-bottom bg-white">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3 col-6">
+                <h3 class="fw-bold text-primary mb-0">10k+</h3>
+                <span class="text-muted">Sản Phẩm</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <h3 class="fw-bold text-primary mb-0">Hàng Ngày</h3>
+                <span class="text-muted">Cập Nhật Mới</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <h3 class="fw-bold text-primary mb-0">Nhanh Chóng</h3>
+                <span class="text-muted">Vận Chuyển</span>
+            </div>
+            <div class="col-md-3 col-6">
+                <h3 class="fw-bold text-primary mb-0">24/7</h3>
+                <span class="text-muted">Hỗ Trợ</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="products" class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title mb-5">
+            <span class="text-primary fw-bold text-uppercase ls-1">Bộ Sưu Tập</span>
+            <h2>Khám Phá Sản Phẩm</h2>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card card-modern border-0 shadow-sm mb-5">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchInput" name="SearchString" value="@Model.SearchString" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm sản phẩm theo tên hoặc mã...">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <select id="sortOrderSelect" name="sortOrder" class="form-select border-0 bg-light">
+                            <option value="">Sắp xếp: Mới nhất</option>
+                            <option value="name_desc" selected="@(Model.SortOrder == "name_desc")">Tên: Z đến A</option>
+                            <option value="Price" selected="@(Model.SortOrder == "Price")">Giá: Thấp đến Cao</option>
+                            <option value="price_desc" selected="@(Model.SortOrder == "price_desc")">Giá: Cao đến Thấp</option>
+                            <option value="Date" selected="@(Model.SortOrder == "Date")">Cũ nhất trước</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="button" onclick="applySearchAndSort()" class="btn btn-primary-modern w-100">
+                            Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="categories-wrapper">
+                <div class="category-filter-item @(Model.CategoryId == null ? "active" : "")" onclick="filterByCategory(null)" data-id="">
+                    Tất cả sản phẩm
+                </div>
+                @foreach (var cat in Model.Categories)
+                {
+                    <div class="category-filter-item @(Model.CategoryId == cat.CategoryId ? "active" : "")" onclick="filterByCategory(@cat.CategoryId)" data-id="@cat.CategoryId">
+                        @cat.Name
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="productListContainer" class="position-relative" style="min-height: 400px;">
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            
+            <div id="ajaxContent">
+                <partial name="_ProductList" model="Model" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);">
+    <div class="container text-center text-white py-5">
+        <h2 class="fw-bold mb-3 display-5">Bạn đã tìm thấy món đồ ưng ý?</h2>
+        <p class="lead mb-4 op-8">Đăng ký ngay để bắt đầu mua sắm và nhận những ưu đãi đặc quyền.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg rounded-pill fw-bold text-primary px-5">
+                Tạo Tài Khoản
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        var isAuthenticated = @Json.Serialize(isAuthenticated);
+        var loginUrl = '@Html.Raw(loginUrl)';
+
+        function redirectToLogin() {
+            Swal.fire({
+                title: 'Chưa đăng nhập',
+                text: 'Bạn cần đăng nhập để thực hiện chức năng này.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đăng nhập ngay',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = loginUrl;
+                }
+            });
+        }
+
+        // Hàm : Thêm vào giỏ hàng
+        function addToCart(productId) {
+            if (!isAuthenticated) {
+                redirectToLogin();
+                return;
+            }
+
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: { productId: productId, quantity: 1 },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            // Cập nhật số lượng giỏ hàng trên header nếu cần
+                            location.reload(); 
+                        });
+                    } else if (response.requireLogin) {
+                        redirectToLogin();
+                    } else {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Lỗi!', 'Không thể thực hiện tác vụ này.', 'error');
+                }
+            });
+        }
+
+        // Hàm : Mua ngay (Xác nhận và chuyển hướng đến giỏ hàng để dùng mã giảm giá)
+        function confirmBuyNow(productId, productName, price) {
+            if (!isAuthenticated) {
+                redirectToLogin();
+                return;
+            }
+
+            Swal.fire({
+                title: 'Mua ngay?',
+                text: "Bạn có muốn thêm " + productName + " vào giỏ hàng và thanh toán ngay không?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    buyNow(productId);
+                }
+            })
+        }
+
+        function buyNow(productId) {
+            $.post('/Cart/AddToCart', { productId: productId, quantity: 1 }, function(res) {
+                if (res.requireLogin) {
+                    redirectToLogin();
+                } else if (res.success) {
+                    window.location.href = '/Cart';
+                } else {
+                    Swal.fire('Lỗi', res.message, 'error');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+        });
+    </script>
+    
+    <script>
+        let currentCategoryId = @Json.Serialize(Model.CategoryId);
+        let currentSortOrder = @Json.Serialize(Model.SortOrder);
+        let currentSearchString = @Json.Serialize(Model.SearchString);
+
+        function filterByCategory(id) {
+            currentCategoryId = id;
+            updateProductList(1);
+            
+            // Update UI active state
+            document.querySelectorAll('.category-filter-item').forEach(el => {
+                if (el.dataset.id == (id || '')) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        function applySearchAndSort() {
+            currentSearchString = document.querySelector('input[name="SearchString"]')?.value || '';
+            currentSortOrder = document.querySelector('select[name="sortOrder"]')?.value || '';
+            updateProductList(1);
+        }
+
+        // Add event listeners for original form elements if they still exist or are replaced
+        document.addEventListener('DOMContentLoaded', function() {
+            const sortSelect = document.querySelector('select[name="sortOrder"]');
+            if (sortSelect) {
+                sortSelect.removeAttribute('onchange');
+                sortSelect.addEventListener('change', applySearchAndSort);
+            }
+
+            const searchInput = document.querySelector('input[name="SearchString"]');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        applySearchAndSort();
+                    }
+                });
+            }
+            
+            // Delegation for pagination
+            document.getElementById('ajaxContent').addEventListener('click', function(e) {
+                if (e.target.closest('.pagination-ajax')) {
+                    e.preventDefault();
+                    const page = e.target.closest('.pagination-ajax').dataset.page;
+                    updateProductList(page);
+                }
+            });
+        });
+
+        async function updateProductList(page) {
+            const container = document.getElementById('ajaxContent');
+            const overlay = document.getElementById('loadingOverlay');
+            
+            overlay.classList.add('active');
+            container.classList.add('fade-out');
+
+            const params = new URLSearchParams({
+                categoryId: currentCategoryId || '',
+                sortOrder: currentSortOrder || '',
+                searchString: currentSearchString || '',
+                page: page || 1
+            });
+
+            try {
+                const response = await fetch(`/?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    const html = await response.text();
+                    container.innerHTML = html;
+                    
+                    // Update URL without reload
+                    const nextUrl = page === 1 && !currentCategoryId && !currentSortOrder && !currentSearchString 
+                        ? '/' 
+                        : `?${params.toString()}`;
+                    window.history.pushState({ path: nextUrl }, '', nextUrl);
+                    
+                    // Scroll to products section
+                    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+            } finally {
+                overlay.classList.remove('active');
+                container.classList.remove('fade-out');
+            }
+        }
+    </script>
+}

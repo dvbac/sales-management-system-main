@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SalesM</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SalesManagement.Web.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        .notification-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            max-width: 450px;
+        }
+
+        .swal2-popup {
+            border-radius: 15px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg fixed-top glass-effect">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-graph-up-arrow"></i> SalesM
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Sản phẩm</a>
+                        </li>
+
+                    </ul>
+                    <ul class="navbar-nav align-items-center gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        @User.Identity.Name?.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <span>@User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius: 12px;">
+                                    <li><h6 class="dropdown-header">@User.FindFirst("FullName")?.Value</h6></li>
+                                    <li><span class="dropdown-item-text small text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i> Quản trị</a></li>
+                                    }
+                                    @if (User.IsInRole("Sales"))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="Sale" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i> Quản trị</a></li>
+                                    }
+                                    @if (!User.IsInRole("Admin") && !User.IsInRole("Sales"))
+                                     {
+                                         <li><a class="dropdown-item" asp-area="" asp-controller="Cart" asp-action="Index"><i class="bi bi-cart3 me-2"></i> Giỏ hàng của tôi</a></li>
+
+                                         <li><a class="dropdown-item" asp-area="" asp-controller="Orders" asp-action="MyOrders"><i class="bi bi-bag-check me-2"></i> Đơn hàng của tôi</a></li>
+
+                                     }
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Sales"))
+                                     {
+                                         <li><a class="dropdown-item" asp-area="" asp-controller="Attendance" asp-action="Index"><i class="bi bi-clock-history me-2"></i> Báo cáo chấm công</a></li>
+                                     }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-modern btn-sm" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary-modern btn-sm" asp-controller="Account" asp-action="Register">Đăng ký</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="notification-container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-lg border-0 mb-3" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-lg border-0 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <main role="main" class="pb-3" style="min-height: 80vh; @(ViewData["HideHeaderSpacer"] == null ? "padding-top: 100px;" : "")">
+        @RenderBody()
+    </main>
+
+    <footer class="modern-footer text-muted">
+        <div class="container border-top pt-4 mt-4 text-center">
+            <p>&copy; 2026 SalesM. Đã đăng ký bản quyền.</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            setTimeout(function () {
+                $(".alert").fadeOut('slow');
+            }, 5000);
+        });
+
+        function confirmPurchase(productId, productName, price) {
+            Swal.fire({
+                title: 'Xác nhận mua hàng?',
+                html: `Bạn muốn đặt mua <b>${productName}</b> với giá <span class="text-primary">${price} ₫</span> và thanh toán tiền mặt khi nhận hàng?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đồng ý, mua ngay!',
+                cancelButtonText: 'Để sau',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('buy-form-' + productId);
+                    if (form) {
+                        form.submit();
+                    }
+                }
+            });
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

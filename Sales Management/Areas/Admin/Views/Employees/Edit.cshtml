@@ -1,0 +1,135 @@
+@model SalesManagement.DAL.Entities.Employee
+@{
+    ViewData["Title"] = "Chỉnh sửa nhân viên";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Chỉnh sửa hồ sơ</h3>
+        <p class="text-muted mb-0">Cập nhật thông tin cho @Model.User?.FullName</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card-modern text-center h-100">
+            <div class="py-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light-primary mb-3" style="width: 100px; height: 100px;">
+                    <span class="fs-1 fw-bold text-primary">@Model.User?.FullName?.Substring(0,1).ToUpper()</span>
+                </div>
+                <h5 class="fw-bold mb-1">@Model.User?.FullName</h5>
+                <p class="text-muted mb-3">@Model.Position</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <span class="badge-modern badge-info-modern">@Model.User?.Role</span>
+                    @if(!Model.IsDeleted) {
+                        <span class="badge-modern badge-success-modern">Hoạt động</span>
+                    }
+                </div>
+            </div>
+            <div class="border-top pt-3 text-start">
+                <small class="text-muted d-block mb-1 text-uppercase fw-bold">Email</small>
+                <p class="mb-3 text-dark">@Model.User?.Email</p>
+                
+                <small class="text-muted d-block mb-1 text-uppercase fw-bold">Ngày tham gia</small>
+                <p class="mb-0 text-dark">@Model.User?.CreatedDate.ToString("dd/MM/yyyy")</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="UserId" />
+
+             <!-- User Account Info (Editable) -->
+            <div class="card-modern mb-4">
+                <h5 class="mb-4 text-dark fw-bold border-bottom pb-2">Thông tin tài khoản</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Họ và tên <span class="text-danger">*</span></label>
+                        <input name="FullName" class="form-control" value="@Model.User?.FullName" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Email (Tên đăng nhập) <span class="text-danger">*</span></label>
+                        <input name="Email" type="email" class="form-control" value="@Model.User?.Email" required />
+                        <div class="form-text text-muted">Thay đổi email sẽ thay đổi tên đăng nhập.</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                         <label class="form-label fw-bold small text-muted">Số điện thoại</label>
+                        <input name="PhoneNumber" class="form-control" value="@Model.User?.PhoneNumber" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Vai trò <span class="text-danger">*</span></label>
+                        <select name="Role" class="form-select">
+                            <option value="Sales" selected="@(Model.User?.Role == "Sales")">Nhân viên kinh doanh (Sales)</option>
+                            <option value="Admin" selected="@(Model.User?.Role == "Admin")">Quản trị viên (Admin)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-modern mb-4">
+                <h5 class="mb-4 text-dark fw-bold border-bottom pb-2">Thông tin công việc</h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Position" class="form-label fw-bold small text-muted">Chức vụ</label>
+                        <input asp-for="Position" class="form-control" />
+                        <span asp-validation-for="Position" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Department" class="form-label fw-bold small text-muted">Phòng ban</label>
+                        <input asp-for="Department" class="form-control" />
+                        <span asp-validation-for="Department" class="text-danger"></span>
+                    </div>
+                </div>
+
+                 <div class="row">
+                     <div class="col-md-6 mb-3">
+                        <label asp-for="ContractType" class="form-label fw-bold small text-muted">Loại hợp đồng</label>
+                         <select asp-for="ContractType" class="form-select">
+                            <option value="FullTime">Toàn thời gian</option>
+                            <option value="PartTime">Bán thời gian</option>
+                            <option value="Intern">Thực tập sinh</option>
+                            <option value="Contract">Hợp đồng</option>
+                        </select>
+                        <span asp-validation-for="ContractType" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StartWorkingDate" class="form-label fw-bold small text-muted">Ngày bắt đầu</label>
+                        <input asp-for="StartWorkingDate" class="form-control" type="date" />
+                        <span asp-validation-for="StartWorkingDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                     <div class="col-md-6 mb-3">
+                        <label asp-for="BasicSalary" class="form-label fw-bold small text-muted">Lương cơ bản</label>
+                        <div class="input-group">
+                            <input asp-for="BasicSalary" class="form-control" type="number" step="1000" />
+                            <span class="input-group-text">cents</span>
+                        </div>
+                        <span asp-validation-for="BasicSalary" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <a asp-action="Index" class="btn btn-light rounded-pill px-4 me-2">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary rounded-pill px-5">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

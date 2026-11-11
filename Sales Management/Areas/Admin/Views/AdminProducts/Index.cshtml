@@ -1,0 +1,186 @@
+@model IEnumerable<SalesManagement.DAL.Entities.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div>
+            <h1 class="fw-bold mb-0">Quản lý sản phẩm</h1>
+            <p class="text-muted mb-0">Danh sách sản phẩm và trạng thái hiện tại</p>
+        </div>
+        <div class="d-flex align-items-center">
+             <!-- User profile placeholder if not in layout -->
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <!-- Action Toolbar -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                
+                <!-- Search & Filters -->
+                <form asp-action="Index" method="get" class="d-flex flex-grow-1 gap-2" style="max-width: 600px;">
+                    <div class="position-relative flex-grow-1">
+                        <i class="fas fa-search text-muted position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                        <input type="text" name="searchString" class="form-control rounded-pill ps-5 bg-light border-0 py-2" 
+                               placeholder="Tìm kiếm sản phẩm..." value="@ViewBag.SearchString">
+                    </div>
+                    <div>
+                        <select name="sortOrder" class="form-select rounded-pill bg-light border-0 py-2 ps-3 pe-5" onchange="this.form.submit()">
+                            <option value="">Sắp xếp...</option>
+                            <option value="name_desc" selected="@(ViewBag.SortOrder == "name_desc")">Tên (Z-A)</option>
+                            <option value="Price" selected="@(ViewBag.SortOrder == "Price")">Giá (Thấp-Cao)</option>
+                            <option value="price_desc" selected="@(ViewBag.SortOrder == "price_desc")">Giá (Cao-Thấp)</option>
+                            <option value="Date" selected="@(ViewBag.SortOrder == "Date")">Cũ nhất</option>
+                            <option value="date_desc" selected="@(ViewBag.SortOrder == "date_desc")">Mới nhất</option>
+                        </select>
+                    </div>
+                </form>
+
+                <!-- Add Button -->
+                <div>
+                    <a asp-action="Create" class="btn btn-primary rounded-pill px-4 py-2 fw-bold">
+                        <i class="fas fa-plus me-2"></i>Thêm sản phẩm
+                    </a>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light text-uppercase text-muted small border-bottom-0">
+                        <tr>
+                            <th class="border-0 ps-4 rounded-start">Mã SP</th>
+                            <th class="border-0">Hình ảnh</th>
+                            <th class="border-0">Tên sản phẩm</th>
+                            <th class="border-0">Danh mục</th>
+                            <th class="border-0">Giá bán</th>
+                            <th class="border-0">Tồn kho</th>
+                            <th class="border-0">Trạng thái</th>
+                            <th class="border-0 text-end pe-4 rounded-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">Không tìm thấy sản phẩm nào.</td>
+                            </tr>
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var primaryImg = item.ProductImages?.FirstOrDefault(p => p.IsPrimary == true)?.ImageUrl ?? "/images/no-image.png";
+                            <tr class="border-bottom">
+                                <td class="ps-4 fw-bold text-dark">@item.Code</td>
+                                <td>
+                                    <div class="rounded-3 overflow-hidden border shadow-sm" style="width: 50px; height: 50px;">
+                                        <img src="@primaryImg" alt="@item.Name" class="w-100 h-100 object-fit-cover">
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="d-block fw-bold text-dark">@item.Name</span>
+                                    <small class="text-muted text-truncate d-block" style="max-width: 200px;">@item.Description</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border">@item.Category?.Name</span></td>
+                                <td class="fw-bold text-primary">@((item.SellingPrice).ToString("N0", new System.Globalization.CultureInfo("vi-VN"))) ₫</td>
+                                <td>
+                                    @if(item.StockQuantity < 10)
+                                    {
+                                        <span class="text-danger fw-bold">@item.StockQuantity</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.StockQuantity</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Status == "Active")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">HOẠT ĐỘNG</span>
+                                    }
+                                    else if (item.Status == "Deleted")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill">ĐÃ XÓA</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2 rounded-pill">@item.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v text-muted"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                            <li><a class="dropdown-item py-2" asp-action="Edit" asp-route-id="@item.ProductId"><i class="fas fa-edit me-2 text-warning"></i>Sửa</a></li>
+                                            <li><a class="dropdown-item py-2" asp-action="Details" asp-route-id="@item.ProductId"><i class="fas fa-info-circle me-2 text-info"></i>Chi tiết</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item py-2 text-danger" asp-action="Delete" asp-route-id="@item.ProductId"><i class="fas fa-trash me-2"></i>Xóa</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted small">Hiển thị trang @ViewBag.CurrentPage của @ViewBag.TotalPages</span>
+                    <nav>
+                        <ul class="pagination mb-0 rounded-pill overflow-hidden shadow-sm">
+                            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="@(ViewBag.CurrentPage - 1)" 
+                                   asp-route-searchString="@ViewBag.SearchString" 
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                   <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                    <a class="page-link border-0" asp-action="Index" 
+                                       asp-route-page="@i" 
+                                       asp-route-searchString="@ViewBag.SearchString" 
+                                       asp-route-sortOrder="@ViewBag.SortOrder">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <a class="page-link border-0" asp-action="Index" 
+                                   asp-route-page="@(ViewBag.CurrentPage + 1)" 
+                                   asp-route-searchString="@ViewBag.SearchString" 
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                   <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Inline minimal styles to supplement bootstrap if custom CSS is missing */
+    .bg-success-subtle { background-color: #d1e7dd !important; }
+    .text-success { color: #146c43 !important; }
+    .bg-danger-subtle { background-color: #f8d7da !important; }
+    .text-danger { color: #b02a37 !important; }
+    .bg-warning-subtle { background-color: #fff3cd !important; }
+    .text-warning { color: #997404 !important; }
+    .object-fit-cover { object-fit: cover; }
+    .rounded-start { border-top-left-radius: 0.5rem !important; border-bottom-left-radius: 0.5rem !important; }
+    .rounded-end { border-top-right-radius: 0.5rem !important; border-bottom-right-radius: 0.5rem !important; }
+    .btn-light:hover { background-color: #e2e6ea; }
+    .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; }
+</style>

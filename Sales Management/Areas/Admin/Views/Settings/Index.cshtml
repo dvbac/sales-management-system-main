@@ -1,0 +1,173 @@
+@{
+    ViewData["Title"] = "Cài đặt";
+
+    // Safe reads — controller guarantees these are never null
+    var storeName       = ViewData["StoreName"]?.ToString()    ?? "";
+    var storeEmail      = ViewData["StoreEmail"]?.ToString()   ?? "";
+    var storeAddress    = ViewData["StoreAddress"]?.ToString() ?? "";
+    var maintenanceMode = ViewData["MaintenanceMode"] is bool b && b;
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Cài đặt hệ thống</h3>
+        <p class="text-muted mb-0">Thiết lập cấu hình chung cho ứng dụng</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Sidebar tabs -->
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm p-0 overflow-hidden">
+            <div class="list-group list-group-flush" id="settingsTab" role="tablist">
+                <a class="list-group-item list-group-item-action active border-0 py-3 px-4 d-flex align-items-center"
+                   id="general-tab" data-bs-toggle="list" href="#general" role="tab">
+                    <i class="bi bi-sliders me-3 fs-5"></i>
+                    <div>
+                        <div class="fw-bold">Chung</div>
+                        <div class="small text-muted">Thông tin cửa hàng</div>
+                    </div>
+                </a>
+                <a class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center"
+                   id="security-tab" data-bs-toggle="list" href="#security" role="tab">
+                    <i class="bi bi-shield-lock me-3 fs-5"></i>
+                    <div>
+                        <div class="fw-bold">Bảo mật</div>
+                        <div class="small text-muted">Mật khẩu &amp; Quyền</div>
+                    </div>
+                </a>
+                <a class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center"
+                   id="notifications-tab" data-bs-toggle="list" href="#notifications" role="tab">
+                    <i class="bi bi-bell me-3 fs-5"></i>
+                    <div>
+                        <div class="fw-bold">Thông báo</div>
+                        <div class="small text-muted">Cấu hình email</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="col-lg-9">
+        <div class="tab-content" id="settingsTabContent">
+
+            <!-- ── General ──────────────────────────────────────────────────── -->
+            <div class="tab-pane fade show active" id="general" role="tabpanel">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="mb-4 text-dark fw-bold">Thông tin chung</h5>
+                    <form asp-action="UpdateGeneral" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Tên cửa hàng</label>
+                                <input type="text" name="StoreName" class="form-control"
+                                       value="@storeName" placeholder="VD: Sales Management" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Email liên hệ</label>
+                                <input type="email" name="StoreEmail" class="form-control"
+                                       value="@storeEmail" placeholder="VD: admin@gmail.com" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Địa chỉ</label>
+                            <input type="text" name="StoreAddress" class="form-control"
+                                   value="@storeAddress" placeholder="VD: 123 Đường ABC, TP.HCM" />
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Tiền tệ</label>
+                                <input class="form-control" value="VND (đ)" readonly aria-label="Tiền tệ" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Múi giờ</label>
+                                <select class="form-select" disabled>
+                                    <option selected>(GMT+07:00) Bangkok, Hanoi, Jakarta</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 text-dark fw-bold pt-3 border-top">Bảo trì</h5>
+                        <div class="form-check form-switch mb-3">
+                            @if (maintenanceMode)
+                            {
+                                <input class="form-check-input" type="checkbox" id="maintenanceMode"
+                                       name="MaintenanceMode" value="true" checked />
+                            }
+                            else
+                            {
+                                <input class="form-check-input" type="checkbox" id="maintenanceMode"
+                                       name="MaintenanceMode" value="true" />
+                            }
+                            <label class="form-check-label" for="maintenanceMode">
+                                Chế độ bảo trì (Chỉ Admin truy cập)
+                            </label>
+                        </div>
+
+                        <div class="text-end pt-3">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                <i class="bi bi-save me-2"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ── Security ─────────────────────────────────────────────────── -->
+            <div class="tab-pane fade" id="security" role="tabpanel">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="mb-4 text-dark fw-bold">Bảo mật tài khoản</h5>
+                    <form asp-action="UpdatePassword" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Mật khẩu hiện tại</label>
+                            <input type="password" name="CurrentPassword" class="form-control" required />
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Mật khẩu mới</label>
+                                <input type="password" name="NewPassword" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Xác nhận mật khẩu mới</label>
+                                <input type="password" name="ConfirmPassword" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="text-end pt-3">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                <i class="bi bi-key me-2"></i> Đổi mật khẩu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ── Notifications ────────────────────────────────────────────── -->
+            <div class="tab-pane fade" id="notifications" role="tabpanel">
+                <div class="card border-0 shadow-sm p-4 text-center py-5">
+                    <i class="bi bi-cone-striped text-warning display-1 mb-3"></i>
+                    <h4 class="fw-bold">Đang phát triển</h4>
+                    <p class="text-muted">Tính năng cấu hình thông báo sẽ sớm được cập nhật.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

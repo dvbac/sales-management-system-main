@@ -1,0 +1,88 @@
+@model SalesManagement.Web.Models.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Tạo nhân viên";
+}
+
+<h1>Tạo nhân viên</h1>
+
+<h4>Hồ sơ nhân viên</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <h5 class="mt-3">Tài khoản người dùng</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FullName" class="control-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Role" class="control-label"></label>
+                    <select asp-for="Role" class="form-select">
+                        <option value="Sales">Nhân viên kinh doanh (Sales)</option>
+                        <option value="Admin">Quản trị viên (Admin)</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h5 class="mt-3">Chi tiết công việc</h5>
+            <div class="mb-3">
+                <label asp-for="Position" class="control-label"></label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BasicSalary" class="control-label"></label>
+                    <input asp-for="BasicSalary" class="form-control" type="number" step="1000" />
+                    <span asp-validation-for="BasicSalary" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="StartWorkingDate" class="control-label"></label>
+                    <input asp-for="StartWorkingDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartWorkingDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Department" class="control-label"></label>
+                <input asp-for="Department" class="form-control" />
+                <span asp-validation-for="Department" class="text-danger"></span>
+            </div>
+             <div class="mb-3">
+                <label asp-for="ContractType" class="control-label"></label>
+                <select asp-for="ContractType" class="form-select">
+                    <option value="FullTime">Toàn thời gian</option>
+                    <option value="PartTime">Bán thời gian</option>
+                    <option value="Intern">Thực tập sinh</option>
+                </select>
+                <span asp-validation-for="ContractType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Tạo" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

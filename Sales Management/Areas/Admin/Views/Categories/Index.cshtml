@@ -1,0 +1,94 @@
+@model IEnumerable<SalesManagement.DAL.Entities.Category>
+
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Quản lý danh mục</h3>
+        <p class="text-muted mb-0">Danh sách danh mục sản phẩm và trạng thái</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i> Thêm danh mục
+        </a>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form asp-action="Index" method="get" class="d-flex">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-search text-secondary"></i></span>
+                <input type="text" name="searchString" class="form-control bg-light border-start-0 ps-0" placeholder="Tìm kiếm danh mục..." value="@ViewData["CurrentFilter"]" style="min-width: 200px;">
+                <select name="statusFilter" class="form-select bg-light border-start-0 rounded-end-pill ms-2" style="max-width: 150px;" onchange="this.form.submit()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Active" selected="@((string)ViewData["CurrentStatus"] == "Active")">Hoạt động</option>
+                    <option value="Inactive" selected="@((string)ViewData["CurrentStatus"] == "Inactive")">Tạm ẩn</option>
+                </select>
+            </div>
+            
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th><a asp-action="Index" asp-route-sortOrder="@ViewData["OrderSortParm"]" class="text-secondary text-decoration-none">Thứ tự <i class="bi bi-arrow-down-up small"></i></a></th>
+                    <th>Hình ảnh</th>
+                    <th><a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" class="text-secondary text-decoration-none">Tên danh mục <i class="bi bi-arrow-down-up small"></i></a></th>
+                    <th>Mô tả</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                         <td>@item.DisplayOrder</td>
+                        <td>
+                             <div class="user-avatar-small" style="width: 50px; height: 50px; border-radius: 10px; background-color: #f1f5f9; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name" style="width: 100%; height: 100%; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                     <i class="bi bi-image text-muted" style="font-size: 1.5rem;"></i>
+                                }
+                            </div>
+                        </td>
+                        <td class="fw-bold text-dark">@item.Name</td>
+                        <td class="text-muted" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            @item.Description
+                        </td>
+                        <td>
+                            @if (item.Status == "Active")
+                            {
+                                <span class="badge-modern badge-success-modern">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge-modern badge-secondary">Tạm ẩn</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                             <div class="dropdown">
+                                <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.CategoryId"><i class="bi bi-pencil me-2"></i> Chỉnh sửa</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.CategoryId"><i class="bi bi-trash me-2"></i> Xóa</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

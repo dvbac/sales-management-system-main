@@ -1,0 +1,21 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<ul class="nav nav-pills mb-4 gap-2">
+    <li class="nav-item">
+        <a class="nav-link @(currentAction == "Index" ? "active" : "bg-white text-dark")" asp-action="Index">
+            <i class="bi bi-graph-up-arrow me-2"></i>Doanh thu
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentAction == "Products" ? "active" : "bg-white text-dark")" asp-action="Products">
+            <i class="bi bi-box-seam me-2"></i>Sản phẩm
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentAction == "Financials" ? "active" : "bg-white text-dark")" asp-action="Financials">
+            <i class="bi bi-cash-coin me-2"></i>Tài chính
+        </a>
+    </li>
+</ul>

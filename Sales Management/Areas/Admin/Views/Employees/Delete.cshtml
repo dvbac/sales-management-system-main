@@ -1,0 +1,45 @@
+@model SalesManagement.DAL.Entities.Employee
+@{
+    ViewData["Title"] = "Xóa nhân viên";
+}
+
+<div class="row min-vh-50 align-items-center justify-content-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card-modern text-center p-5">
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light-danger" style="width: 80px; height: 80px;">
+                    <i class="bi bi-exclamation-tiktok fs-1 text-danger"></i>
+                </div>
+            </div>
+            
+            <h3 class="fw-bold mb-3">Xóa nhân viên?</h3>
+            <p class="text-muted mb-4">
+                Bạn có chắc chắn muốn xóa nhân viên <strong class="text-dark">@Model.User?.FullName</strong>? 
+                <br>Hành động này sẽ xóa mềm và vô hiệu hóa tài khoản, nhưng dữ liệu lịch sử vẫn được giữ lại.
+            </p>
+
+            <div class="card bg-light border-0 mb-4 text-start p-3">
+                 <div class="d-flex align-items-center mb-2">
+                    <span class="text-muted me-3" style="width: 80px">Chức vụ:</span>
+                    <span class="fw-bold">@Model.Position</span>
+                </div>
+                 <div class="d-flex align-items-center mb-2">
+                    <span class="text-muted me-3" style="width: 80px">Email:</span>
+                    <span class="fw-bold">@Model.User?.Email</span>
+                </div>
+                 <div class="d-flex align-items-center">
+                    <span class="text-muted me-3" style="width: 80px">Phòng ban:</span>
+                    <span class="fw-bold">@Model.Department</span>
+                </div>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="EmployeeId" />
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-action="Index" class="btn btn-light rounded-pill px-4 flex-grow-1">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 flex-grow-1">Xác nhận xóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+@model SalesManagement.DAL.Entities.Payroll
+@{
+    ViewData["Title"] = "Payslip";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold mb-0">Payslip</h3>
+                            <p class="mb-0 opacity-75">Period: @Model.Month / @Model.Year</p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="mb-0">@Model.Employee.User.FullName</h4>
+                            <small>@Model.Employee.Position</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    
+                    <div class="row mb-5">
+                        <div class="col-6">
+                            <h6 class="text-muted text-uppercase mb-3">Earnings</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Basic Salary</span>
+                                <span class="fw-bold">@Model.BaseSalary.ToString("N0") VND</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Allowances</span>
+                                <span class="text-success fw-bold">+@Model.TotalAllowances.ToString("N0") VND</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Overtime / Bonus</span>
+                                <span class="text-success fw-bold">+@Model.Bonus.ToString("N0") VND</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">Total Earnings</span>
+                                <span class="fw-bold">@((Model.BaseSalary + Model.TotalAllowances + Model.Bonus).ToString("N0")) VND</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 border-start ps-5">
+                            <h6 class="text-muted text-uppercase mb-3">Deductions</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Deductions</span>
+                                <span class="text-danger fw-bold">-@Model.TotalDeductions.ToString("N0") VND</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Income Tax</span>
+                                <span class="text-danger fw-bold">-@Model.TaxAmount.ToString("N0") VND</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Penalty</span>
+                                <span class="text-danger fw-bold">-@Model.Penalty.ToString("N0") VND</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">Total Deductions</span>
+                                <span class="fw-bold text-danger">-@((Model.TotalDeductions + Model.TaxAmount + Model.Penalty).ToString("N0")) VND</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-light p-4 rounded-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-secondary">Net Salary</span>
+                            <span class="h2 mb-0 fw-bold text-primary">@Model.NetSalary.ToString("N0") VND</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center text-muted small">
+                        This is a computer-generated document. No signature is required.
+                        <br>Generated on: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3 text-center">
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Back to List</a>
+                    <button onclick="window.print()" class="btn btn-primary rounded-pill px-4 ms-2">
+                        <i class="bi bi-printer-fill me-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

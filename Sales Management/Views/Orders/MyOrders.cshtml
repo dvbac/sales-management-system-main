@@ -1,0 +1,163 @@
+@model IEnumerable<SalesManagement.DAL.Entities.Order>
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-box-seam me-2 text-primary"></i>Lịch sử đơn hàng
+            </h1>
+            <p class="text-muted mb-0">Tra cứu và theo dõi trạng thái các đơn hàng bạn đã mua</p>
+        </div>
+        <div class="col-auto">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="bi bi-cart-plus me-1"></i> Tiếp tục mua sắm
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 my-5 bg-white rounded-4 shadow-sm border-0">
+            <div class="mb-4">
+                <i class="bi bi-bag-x display-1 text-muted opacity-50"></i>
+            </div>
+            <h3 class="fw-bold text-secondary mb-2">Bạn chưa có đơn hàng nào</h3>
+            <p class="text-muted mb-4">Hãy khám phá các sản phẩm tuyệt vời của chúng tôi và đặt hàng ngay!</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                <i class="bi bi-shop me-2"></i> Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 border-0 text-muted fw-semibold">Mã Đơn</th>
+                                <th class="py-3 border-0 text-muted fw-semibold">Ngày đặt</th>
+                                <th class="py-3 border-0 text-muted fw-semibold">Tổng tiền</th>
+                                <th class="py-3 border-0 text-muted fw-semibold">Thanh toán</th>
+                                <th class="py-3 border-0 text-muted fw-semibold">Trạng thái</th>
+                                <th class="pe-4 py-3 border-0 text-muted fw-semibold text-center">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-primary">#@order.OrderId.ToString("D5")</div>
+                                        <small class="text-muted">@order.OrderDetails.Count sản phẩm</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium text-dark">@order.OrderDate?.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">@order.OrderDate?.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark">
+                                            @((order.TotalAmount ?? 0).ToString("N0", new System.Globalization.CultureInfo("vi-VN"))) ₫
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (order.PaymentStatus == "Paid")
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Đã thanh toán
+                                            </span>
+                                        }
+                                        else if (order.PaymentStatus == "Refunded")
+                                        {
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>Đã hoàn tiền
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-1">
+                                                <i class="bi bi-clock-fill me-1"></i>Chưa thanh toán
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (order.Status)
+                                        {
+                                            case "Pending":
+                                                <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">Chờ xử lý</span>
+                                                break;
+                                            case "Processing":
+                                                <span class="badge bg-info-subtle text-info rounded-pill px-3 py-2">Đang xử lý</span>
+                                                break;
+                                            case "Completed":
+                                                <span class="badge bg-success shadow-sm rounded-pill px-3 py-2">Hoàn thành</span>
+                                                break;
+                                            case "Cancelled":
+                                                <span class="badge bg-danger shadow-sm rounded-pill px-3 py-2">Đã hủy</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2">@order.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="pe-4 text-center">
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder-@order.OrderId" aria-expanded="false" aria-controls="collapseOrder-@order.OrderId">
+                                            Xem <i class="bi bi-chevron-down ms-1"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Collapse Detail Row -->
+                                <tr>
+                                    <td colspan="6" class="p-0 border-0">
+                                        <div class="collapse" id="collapseOrder-@order.OrderId">
+                                            <div class="bg-light p-4 border-bottom">
+                                                <h6 class="fw-bold mb-3"><i class="bi bi-card-list me-2"></i>Chi tiết sản phẩm</h6>
+                                                <div class="table-responsive bg-white rounded-3 shadow-sm border">
+                                                    <table class="table table-sm table-borderless mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th class="ps-3 py-2">Sản phẩm</th>
+                                                                <th class="text-center py-2">Số lượng</th>
+                                                                <th class="text-end pe-3 py-2">Đơn giá</th>
+                                                                <th class="text-end pe-3 py-2">Tổng</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var detail in order.OrderDetails)
+                                                            {
+                                                                <tr class="border-bottom">
+                                                                    <td class="ps-3 py-2 align-middle">
+                                                                        <span class="fw-medium text-dark">@detail.Product?.Name</span>
+                                                                    </td>
+                                                                    <td class="text-center py-2 align-middle">@detail.Quantity</td>
+                                                                    <td class="text-end pe-3 py-2 text-muted align-middle">
+                                                                        @detail.UnitPrice.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫
+                                                                    </td>
+                                                                    <td class="text-end pe-3 py-2 fw-semibold text-dark align-middle">
+                                                                        @((detail.Total ?? 0m).ToString("N0", new System.Globalization.CultureInfo("vi-VN"))) ₫
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination logic can be added here if needed -->
+    }
+</div>

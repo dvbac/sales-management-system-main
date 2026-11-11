@@ -1,0 +1,89 @@
+@model SalesManagement.Web.Models.HomeProductViewModel
+
+@if (Model.Products.Any())
+{
+    <div class="row g-4 transition-container">
+        @foreach (var item in Model.Products)
+        {
+            <div class="col-md-3 col-sm-6 product-item">
+                <div class="card h-100 card-modern product-card">
+                    <div class="position-relative overflow-hidden">
+                        @if (!string.IsNullOrEmpty(item.PrimaryImageUrl))
+                        {
+                             <a asp-action="Details" asp-route-id="@item.ProductId" class="d-block">
+                                 <img src="@item.PrimaryImageUrl" class="card-img-top product-img" alt="@item.Name">
+                             </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Details" asp-route-id="@item.ProductId" class="d-block text-decoration-none">
+                                <div class="bg-light d-flex align-items-center justify-content-center text-muted card-img-top product-img">
+                                    <i class="bi bi-image fs-1"></i>
+                                </div>
+                            </a>
+                        }
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-white text-primary shadow-sm">@item.CategoryName</span>
+                        </div>
+
+                        <div class="product-overlay d-flex gap-2 justify-content-center">
+                            <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-light rounded-circle shadow-sm" title="Xem chi tiết">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <button type="button" class="btn btn-light rounded-circle shadow-sm text-primary" onclick="addToCart(@item.ProductId)" title="Thêm vào giỏ">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-primary rounded-circle shadow-sm" onclick="confirmBuyNow('@item.ProductId', '@item.Name', '@((item.SellingPrice).ToString("N0"))')" title="Mua ngay">
+                                <i class="bi bi-bag-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-truncate" title="@item.Name">
+                            <a asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none text-dark">@item.Name</a>
+                        </h5>
+                        <p class="card-text text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            @item.Description
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
+                            <span class="h5 mb-0 text-primary fw-bold">@((item.SellingPrice).ToString("N0", new System.Globalization.CultureInfo("vi-VN"))) <small>₫</small></span>
+                            <small class="text-muted">@item.Status</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-5 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-modern">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link pagination-ajax" href="javascript:void(0)" data-page="@(Model.CurrentPage - 1)"><i class="bi bi-chevron-left"></i></a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link pagination-ajax" href="javascript:void(0)" data-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link pagination-ajax" href="javascript:void(0)" data-page="@(Model.CurrentPage + 1)"><i class="bi bi-chevron-right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <div class="mb-3">
+            <i class="bi bi-search fs-1 text-muted"></i>
+        </div>
+        <h3>Không tìm thấy sản phẩm nào</h3>
+        <p class="text-muted">Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn hoặc chọn danh mục khác.</p>
+        <button type="button" class="btn btn-primary-modern mt-3" onclick="filterByCategory(null)">Xem tất cả sản phẩm</button>
+    </div>
+}

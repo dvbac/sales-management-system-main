@@ -1,0 +1,85 @@
+@model SalesManagement.DAL.Entities.Category
+@{
+    ViewData["Title"] = "Chỉnh sửa danh mục";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Chỉnh sửa danh mục</h3>
+        <p class="text-muted mb-0">Cập nhật thông tin danh mục @Model.Name</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="CategoryId" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="IsDeleted" />
+            <input type="hidden" asp-for="ImageUrl" />
+
+            <div class="card-modern mb-4">
+                 <h5 class="mb-4 text-dark fw-bold border-bottom pb-2">Thông tin danh mục</h5>
+                 
+                 <div class="row">
+                    <div class="col-md-8 mb-3">
+                         <label asp-for="Name" class="form-label fw-bold small text-muted">Tên danh mục <span class="text-danger">*</span></label>
+                         <input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục" autofocus />
+                         <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                     <div class="col-md-4 mb-3">
+                        <label asp-for="DisplayOrder" class="form-label fw-bold small text-muted">Thứ tự hiển thị</label>
+                        <input asp-for="DisplayOrder" type="number" class="form-control" />
+                        <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                    </div>
+                 </div>
+
+                 <div class="mb-3">
+                      <label asp-for="Description" class="form-label fw-bold small text-muted">Mô tả</label>
+                      <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả ngắn gọn về danh mục này"></textarea>
+                      <span asp-validation-for="Description" class="text-danger"></span>
+                 </div>
+
+                 <div class="row">
+                     <div class="col-md-6 mb-3">
+                         <label class="form-label fw-bold small text-muted">Hình ảnh đại diện</label>
+                         
+                         @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                         {
+                             <div class="mb-2">
+                                 <img src="@Model.ImageUrl" class="rounded border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;" alt="Current Image" />
+                                 <div class="small text-muted mt-1">Hình ảnh hiện tại</div>
+                             </div>
+                         }
+                         
+                         <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                         <div class="form-text small">Để trống nếu không muốn thay đổi ảnh.</div>
+                     </div>
+                     <div class="col-md-6 mb-3">
+                        <label asp-for="Status" class="form-label fw-bold small text-muted">Trạng thái</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Active">Hoạt động</option>
+                            <option value="Inactive">Tạm ẩn</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                     </div>
+                 </div>
+            </div>
+
+            <div class="text-end">
+                <a asp-action="Index" class="btn btn-light rounded-pill px-4 me-2">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary rounded-pill px-5">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

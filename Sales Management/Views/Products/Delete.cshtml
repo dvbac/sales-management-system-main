@@ -1,0 +1,32 @@
+@model SalesManagement.Web.Models.ProductViewModel
+
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+}
+
+<h1>Xóa sản phẩm</h1>
+
+<h3>Bạn có chắc chắn muốn xóa sản phẩm này không?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">Mã sản phẩm</dt>
+        <dd class = "col-sm-10">@Model.Code</dd>
+        
+        <dt class = "col-sm-2">Danh mục</dt>
+        <dd class = "col-sm-10">@Model.CategoryName</dd>
+
+        <dt class = "col-sm-2">Giá bán</dt>
+        <dd class = "col-sm-10">@Model.SellingPrice.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</dd>
+        
+        <dt class = "col-sm-2">Tồn kho</dt>
+        <dd class = "col-sm-10">@Model.StockQuantity</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProductId" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+    </form>
+</div>

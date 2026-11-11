@@ -1,0 +1,69 @@
+@model SalesManagement.DAL.Entities.User
+
+@{
+    ViewData["Title"] = "Thêm người dùng mới";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Thêm người dùng</h3>
+        <p class="text-muted mb-0">Tạo tài khoản quản trị hoặc khách hàng</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <div class="card-modern mb-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-bold small text-muted">Họ và tên</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên" required />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold small text-muted">Email (Tên đăng nhập)</label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="example@email.com" required />
+                         <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="PasswordHash" class="form-label fw-bold small text-muted">Mật khẩu</label>
+                        <input name="Password" type="password" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                         <label asp-for="Role" class="form-label fw-bold small text-muted">Vai trò</label>
+                        <select asp-for="Role" class="form-select">
+                            <option value="Customer">Khách hàng</option>
+                            <option value="Admin">Quản trị viên (Admin)</option>
+                            <option value="Sales">Nhân viên Sales</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" checked>
+                        <label class="form-check-label" asp-for="IsActive">Kích hoạt tài khoản</label>
+                    </div>
+
+                    <div class="text-end mt-4">
+                         <button type="submit" class="btn btn-primary rounded-pill px-5">Tạo tài khoản</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,229 @@
+@{
+    ViewData["Title"] = "Tổng quan bán hàng";
+    Layout = "_SaleLayout";
+    
+    var recentOrders = ViewBag.RecentOrders as List<SalesManagement.DAL.Entities.Order>;
+    var topProducts = ViewBag.TopProducts as dynamic; 
+}
+
+<style>
+    .stats-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    .stats-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    .card-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+    }
+    .trend-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .product-img-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .top-product-item {
+        padding: 12px;
+        border-radius: 12px;
+        transition: background 0.2s;
+        border: 1px solid transparent;
+    }
+    .top-product-item:hover {
+        background: #f8faff;
+        border-color: #eef2ff;
+    }
+</style>
+
+<div class="row g-4 mb-4">
+    <!-- Stats Cards -->
+    <div class="col-md-4">
+        <div class="stats-card shadow-sm">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="card-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <span class="trend-badge bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-arrow-up-short"></i> +12%
+                </span>
+            </div>
+            <h6 class="text-muted fw-medium mb-1">Doanh thu tổng</h6>
+            <h3 class="fw-bold mb-0 text-dark">@((ViewBag.TotalRevenue ?? 0m).ToString("N0")) <small class="fw-normal text-muted" style="font-size: 0.9rem;">₫</small></h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card shadow-sm">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="card-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <span class="trend-badge bg-info bg-opacity-10 text-info">Hôm nay</span>
+            </div>
+            <h6 class="text-muted fw-medium mb-1">Đơn hàng mới</h6>
+            <h3 class="fw-bold mb-0 text-dark">@ViewBag.OrdersToday <small class="fw-normal text-muted" style="font-size: 0.9rem;">đơn</small></h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card shadow-sm">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="card-icon bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-boxes"></i>
+                </div>
+                @if (ViewBag.LowStockCount > 0)
+                {
+                    <span class="trend-badge bg-danger bg-opacity-10 text-danger">⚠️ Cần nhập hàng</span>
+                }
+                else
+                {
+                    <span class="trend-badge bg-success bg-opacity-10 text-success">Ổn định</span>
+                }
+            </div>
+            <h6 class="text-muted fw-medium mb-1">Sản phẩm sắp hết</h6>
+            <h3 class="fw-bold mb-0 text-dark">@ViewBag.LowStockCount <small class="fw-normal text-muted" style="font-size: 0.9rem;">mục</small></h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Orders -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+            <div class="card-header bg-white border-bottom py-3 px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i>Đơn hàng gần đây</h5>
+                    <a asp-area="Sale" asp-controller="Orders" asp-action="Index" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium">Xem tất cả</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase fw-bold">
+                            <tr>
+                                <th class="ps-4 py-3">Mã Đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th class="pe-4">Ngày</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (recentOrders != null && recentOrders.Any())
+                            {
+                                foreach (var order in recentOrders)
+                                {
+                                    <tr style="cursor: pointer;" onclick="window.location='@Url.Action("Details", "Orders" , new { id = order.OrderId })'">
+                                        <td class="ps-4">
+                                            <span class="badge bg-light text-dark border fw-bold">#@order.OrderId</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-2 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                    @(order.Customer?.FullName?[0].ToString().ToUpper() ?? "?")
+                                                </div>
+                                                <span class="fw-medium">@order.Customer?.FullName</span>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-dark">@((order.TotalAmount ?? 0m).ToString("N0")) ₫</td>
+                                        <td>
+                                            @{
+                                                var (badgeClass, statusText) = order.Status switch
+                                                {
+                                                    "Completed" => ("bg-success", "Hoàn thành"),
+                                                    "Paid" => ("bg-primary", "Đã thanh toán"),
+                                                    "Pending" => ("bg-warning", "Chờ xử lý"),
+                                                    "Cancelled" => ("bg-danger", "Đã hủy"),
+                                                    _ => ("bg-secondary", order.Status)
+                                                };
+                                            }
+                                            <span class="badge @badgeClass bg-opacity-10 text-@badgeClass.Replace("bg-", "") rounded-pill px-3">@statusText</span>
+                                        </td>
+                                        <td class="text-muted small pe-4">@order.OrderDate?.ToString("HH:mm dd/MM/yy")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <i class="bi bi-inbox text-muted fs-1 d-block mb-3"></i>
+                                        <span class="text-muted">Chưa có đơn hàng nào</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-fire me-2 text-danger"></i>Sản phẩm bán chạy</h5>
+            </div>
+            <div class="card-body px-4">
+                @if (topProducts != null)
+                {
+                    int rank = 1;
+                    foreach (var item in topProducts)
+                    {
+                        <div class="top-product-item d-flex align-items-center mb-2">
+                           <div class="product-img-wrapper me-3">
+                                @if (item.Product?.ProductImages != null && item.Product.ProductImages.Count > 0)
+                                {
+                                    <img src="@item.Product.ProductImages[0].ImageUrl" class="img-fluid rounded" alt="" style="object-fit: cover; width: 100%; height: 100%;">
+                                }
+                                else
+                                {
+                                    <i class="bi bi-box text-muted"></i>
+                                }
+                           </div>
+                           <div class="flex-grow-1 min-vw-0">
+                               <h6 class="mb-0 text-dark fw-bold text-truncate">@item.Product.Name</h6>
+                               <div class="d-flex align-items-center mt-1">
+                                   <span class="badge bg-light text-muted border-0 p-0 me-2 small">Top @(rank++)</span>
+                                   <span class="text-muted extra-small" style="font-size: 0.75rem;">Đã bán: <b class="text-dark">@item.TotalSold</b></span>
+                               </div>
+                           </div>
+                           <div class="text-end">
+                               <span class="fw-bold text-primary d-block">@(((decimal)item.Revenue).ToString("N0"))</span>
+                               <small class="text-muted" style="font-size: 0.7rem;">₫</small>
+                           </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <span class="text-muted italic">Đang cập nhật...</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

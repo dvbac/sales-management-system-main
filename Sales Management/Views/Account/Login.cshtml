@@ -1,0 +1,79 @@
+@model SalesManagement.Web.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-page">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="glass-container">
+        <div class="glass-card">
+            <div class="brand-logo">
+                <i class="bi bi-box-seam-fill me-2"></i>SalesM
+            </div>
+            
+            <div class="auth-header">
+                <h2 class="auth-title">Chào mừng trở lại!</h2>
+                <p class="auth-subtitle">Nhập thông tin đăng nhập của bạn để tiếp tục</p>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                <div class="form-floating-custom">
+                    <label asp-for="Username">Tên đăng nhập</label>
+                    <input asp-for="Username" placeholder="Nhập tên đăng nhập của bạn" autofocus />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating-custom">
+                    <label asp-for="Password">Mật khẩu</label>
+                    <input asp-for="Password" type="password" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check m-0">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label text-secondary small">Ghi nhớ</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    Đăng nhập
+                </button>
+
+                <div class="text-center my-3 text-secondary small">
+                    hoặc
+                </div>
+
+                <a asp-action="GoogleLogin" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2">
+                    <span class="fw-semibold">Đăng nhập với Google</span>
+                </a>
+
+                <div class="auth-footer">
+                    Chưa có tài khoản? 
+                    <a asp-action="Register">Tạo tài khoản mới</a>
+                    <div class="mt-2">
+                        <a asp-action="ForgotPassword" class="text-decoration-none text-secondary small">Quên mật khẩu?</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

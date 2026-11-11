@@ -1,0 +1,71 @@
+@model IEnumerable<SalesManagement.Web.Models.EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Nhân viên</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a asp-action="Create" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Nhân viên mới
+        </a>
+    </div>
+</div>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="searchString" class="form-control" placeholder="Tìm kiếm theo tên hoặc chức vụ" value="@ViewData["CurrentFilter"]">
+        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Chức vụ</th>
+                <th>Phòng ban</th>
+                <th>Loại hợp đồng</th>
+                <th>Ngày bắt đầu</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>@item.FullName</td>
+                    <td>@item.Position</td>
+                    <td>@item.Department</td>
+                    <td>
+                        @(item.ContractType switch {
+                            "FullTime" => "Toàn thời gian",
+                            "PartTime" => "Bán thời gian",
+                            "Intern" => "Thực tập",
+                            "Contract" => "Hợp đồng",
+                            _ => item.ContractType
+                        })
+                    </td>
+                    <td>@item.StartWorkingDate</td>
+                    <td>
+                        @if (item.IsDeleted)
+                        {
+                            <span class="badge bg-danger">Đã xóa</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Hoạt động</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-secondary">Sửa</a>
+                        <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-info">Chi tiết</a>
+                        <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-danger">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

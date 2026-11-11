@@ -1,0 +1,48 @@
+@model SalesManagement.DAL.Entities.Category
+
+@{
+    ViewData["Title"] = "Xóa danh mục";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Xóa danh mục</h3>
+        <p class="text-muted mb-0">Xác nhận xóa danh mục sản phẩm</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card-modern text-center p-5">
+            <div class="mb-4">
+                <i class="bi bi-exclamation-circle text-danger" style="font-size: 4rem;"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-3">Bạn có chắc chắn muốn xóa?</h4>
+            <p class="text-muted mb-4">Danh mục <strong>@Model.Name</strong> sẽ bị xóa khỏi hệ thống (soft delete). Bạn có thể khôi phục sau này nếu cần thiết.</p>
+
+            <dl class="row text-start mb-4 border rounded p-3 bg-light mx-4">
+                <dt class="col-sm-4 text-muted">Tên danh mục:</dt>
+                <dd class="col-sm-8 fw-bold">@Model.Name</dd>
+                
+                <dt class="col-sm-4 text-muted">Mô tả:</dt>
+                <dd class="col-sm-8 text-muted">@Model.Description</dd>
+
+                <dt class="col-sm-4 text-muted">Trạng thái:</dt>
+                <dd class="col-sm-8">@Model.Status</dd>
+            </dl>
+            
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="CategoryId" />
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-action="Index" class="btn btn-light rounded-pill px-4">Không, quay lại</a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Có, xóa danh mục</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

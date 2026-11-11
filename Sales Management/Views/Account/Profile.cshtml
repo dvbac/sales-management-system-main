@@ -1,0 +1,260 @@
+@model SalesManagement.Web.Models.CustomerProfileViewModel
+
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <div>@TempData["Success"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Thông tin tài khoản</h2>
+        <p class="text-muted">Quản lý thông tin cá nhân và lịch sử đơn hàng của bạn</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="position-relative">
+                                <img src="@(string.IsNullOrEmpty(Model.Avatar) ? "/img/default-avatar.png" : Model.Avatar)"
+                                     class="rounded-circle border" width="100" height="100" style="object-fit: cover;">
+                            </div>
+                            <div class="ms-4">
+                                <h4 class="mb-1 fw-bold">@Model.FullName</h4>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-warning text-dark rounded-pill px-3">@Model.CustomerLevel</span>
+                                    <span class="badge bg-light text-muted border rounded-pill px-3">Personal</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm rounded-3 px-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="bi bi-pencil-square me-1"></i>Chỉnh sửa
+                        </button>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center text-muted small mb-1">
+                                <i class="bi bi-envelope me-2"></i> Email
+                            </div>
+                            <span class="fw-medium">@Model.Email</span>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center text-muted small mb-1">
+                                <i class="bi bi-telephone me-2"></i> Số điện thoại
+                            </div>
+                            <span class="fw-medium">@Model.PhoneNumber</span>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center text-muted small mb-1">
+                                <i class="bi bi-geo-alt me-2"></i> Địa chỉ
+                            </div>
+                            <span class="fw-medium">@Model.Address</span>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center text-muted small mb-1">
+                                <i class="bi bi-calendar-check me-2"></i> Ngày tạo tài khoản
+                            </div>
+                            <span class="fw-medium">@Model.CreatedDate.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="nav nav-pills gap-2 mb-3 bg-light p-1 rounded-3 d-inline-flex border-0" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-3 px-4 py-2 fw-medium border-0" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-pane" type="button" role="tab">
+                        <i class="bi bi-cart3 me-2"></i>Đơn hàng
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="profileTabsContent">
+                <div class="tab-pane fade show active" id="orders-pane" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-bag-check me-2"></i>Đơn hàng đã mua</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light small text-uppercase">
+                                        <tr>
+                                            <th>Mã ĐH</th>
+                                            <th>Sản phẩm</th>
+                                            <th>Tổng tiền</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Orders != null && Model.Orders.Any())
+                                        {
+                                            foreach (var order in Model.Orders)
+                                            {
+                                                <tr>
+                                                    <td class="fw-bold small text-secondary">#@order.OrderId</td>
+                                                    <td class="small">@order.ProductNames</td>
+                                                    <td class="fw-bold text-dark">@order.TotalAmount.ToString("N0") ₫</td>
+                                                    <td>
+                                                        @switch (order.Status)
+                                                        {
+                                                            case "Completed":
+                                                                <span class="badge rounded-pill px-3 bg-success-subtle text-success border border-success">
+                                                                    Thành công
+                                                                </span>
+                                                                break;
+                                                            case "Cancelled":
+                                                                <span class="badge rounded-pill px-3 bg-danger-subtle text-danger border border-danger">
+                                                                    Đã hủy
+                                                                </span>
+                                                                break;
+                                                            case "Confirmed":
+                                                            case "Processing":
+                                                                <span class="badge rounded-pill px-3 bg-info-subtle text-info border border-info">
+                                                                    Đang xử lý
+                                                                </span>
+                                                                break;
+                                                            default:
+                                                                <span class="badge rounded-pill px-3 bg-warning-subtle text-warning border border-warning">
+                                                                    @order.Status
+                                                                </span>
+                                                                break;
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="4" class="text-center py-4 text-muted small">Chưa có đơn hàng nào</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="editProfileModalLabel">Chỉnh sửa thông tin cá nhân</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="UpdateProfile" asp-controller="Account" method="post" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            <img id="previewAvatar" src="@(string.IsNullOrEmpty(Model.Avatar) ? "/img/default-avatar.png" : Model.Avatar)"
+                                 class="rounded-circle border" width="100" height="100" style="object-fit: cover;">
+                            <label for="avatarUpload" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                   style="cursor: pointer; width: 32px; height: 32px; border: 2px solid #fff;">
+                                <i class="bi bi-camera-fill small"></i>
+                                <input type="file" id="avatarUpload" name="AvatarFile" class="d-none" accept="image/*" onchange="previewImage(this)">
+                            </label>
+                        </div>
+                        <p class="text-muted small mt-2 mb-0">Thay đổi ảnh đại diện</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Họ và tên</label>
+                        <input type="text" name="FullName" class="form-control rounded-3 border-light-subtle shadow-sm" value="@Model.FullName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Email</label>
+                        <input type="email" name="Email" class="form-control rounded-3 border-light-subtle shadow-sm" value="@Model.Email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Số điện thoại</label>
+                        <input type="tel" name="PhoneNumber" class="form-control rounded-3 border-light-subtle shadow-sm" value="@Model.PhoneNumber">
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Địa chỉ</label>
+                        <textarea name="Address" class="form-control rounded-3 border-light-subtle shadow-sm" rows="3">@Model.Address</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 justify-content-center">
+                    <button type="button" class="btn btn-light rounded-3 px-4 fw-medium" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-dark rounded-3 px-4 fw-medium shadow-sm">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('previewAvatar').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        transition: transform 0.2s ease;
+    }
+
+    .bg-success-subtle {
+        background-color: #d1e7dd !important;
+    }
+
+    .bg-warning-subtle {
+        background-color: #fff3cd !important;
+    }
+
+    .btn-white {
+        background: #fff;
+        border: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-bottom-width: 1px;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #fff !important;
+        color: #000 !important;
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+    }
+
+    .nav-pills .nav-link {
+        color: #6c757d;
+    }
+
+    .form-control:focus {
+        border-color: #000;
+        box-shadow: none;
+    }
+</style>

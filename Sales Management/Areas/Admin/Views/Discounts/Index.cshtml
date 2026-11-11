@@ -1,0 +1,132 @@
+@model IEnumerable<SalesManagement.DAL.Entities.Promotion>
+
+@{
+    ViewData["Title"] = "Mã giảm giá";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Quản lý mã giảm giá</h3>
+        <p class="text-muted mb-0">Tạo và quản lý các chương trình khuyến mãi</p>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i> Tạo mã mới
+        </a>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form asp-action="Index" method="get" class="d-flex w-100" style="max-width: 300px;">
+             <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-search text-secondary"></i></span>
+                <input type="text" name="searchString" class="form-control bg-light border-start-0 rounded-end-pill ps-0" placeholder="Tìm kiếm mã..." value="@ViewData["CurrentFilter"]">
+                <!-- Preserve existing filters -->
+                @if(ViewData["StatusFilter"] != null)
+                {
+                    <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
+                }
+             </div>
+        </form>
+        <div class="d-flex gap-2">
+             <div class="dropdown">
+                <button class="btn btn-outline-secondary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Trạng thái: @(ViewData["StatusFilter"]?.ToString() ?? "Tất cả")
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-action="Index" asp-route-statusFilter="">Tất cả</a></li>
+                    <li><a class="dropdown-item" asp-action="Index" asp-route-statusFilter="Active">Hoạt động</a></li>
+                    <li><a class="dropdown-item" asp-action="Index" asp-route-statusFilter="Disabled">Tạm ngưng</a></li>
+                    <li><a class="dropdown-item" asp-action="Index" asp-route-statusFilter="Expired">Hết hạn (Cũ)</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="border-0 rounded-start-3">Mã Code</th>
+                        <th class="border-0">Giá trị giảm</th>
+                        <th class="border-0">Thời gian</th>
+                        <th class="border-0">Trạng thái</th>
+                        <th class="border-0 rounded-end-3 text-end">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isAboutToExpire = item.Status == "Active" && item.EndDate.HasValue && (item.EndDate.Value - DateTime.Now).TotalDays <= 3 && (item.EndDate.Value - DateTime.Now).TotalDays > 0;
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded p-2 me-2 text-primary">
+                                        <i class="bi bi-ticket-perforated-fill"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">@item.Code</span>
+                                </div>
+                            </td>
+                            <td class="fw-semibold text-primary">
+                                <span>@item.Value.ToString("N0") ₫</span>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <div class="text-muted">Bắt đầu: <span class="text-dark">@item.StartDate?.ToString("dd/MM/yyyy HH:mm")</span></div>
+                                    <div class="text-muted">Kết thúc: <span class="text-dark">@item.EndDate?.ToString("dd/MM/yyyy HH:mm")</span></div>
+                                    @if(isAboutToExpire)
+                                    {
+                                        <div class="text-danger fw-bold mt-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Sắp hết hạn</div>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (item.Status == "Active")
+                                {
+                                    <span class="badge bg-success-subtle text-success rounded-pill">Hoạt động</span>
+                                }
+                                else if (item.Status == "Expired")
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill">Hết hạn</span>
+                                }
+                                else if (item.Status == "Disabled")
+                                {
+                                    <span class="badge bg-danger-subtle text-danger rounded-pill">Tạm ngưng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark rounded-pill">@item.Status</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.PromotionId" class="btn btn-sm btn-icon btn-light rounded-circle"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.PromotionId" class="btn btn-sm btn-icon btn-light rounded-circle text-danger"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <!-- Empty State / Placeholder -->
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-light-primary rounded-circle" style="width: 80px; height: 80px;">
+                    <i class="bi bi-tags-fill fs-1 text-primary"></i>
+                </div>
+            </div>
+            <h4 class="text-dark fw-bold">Chưa có mã giảm giá nào</h4>
+            <p class="text-muted mb-4" style="max-width: 400px; margin: 0 auto;">
+                Bắt đầu chiến dịch tiếp thị của bạn bằng cách tạo các mã giảm giá cho khách hàng.
+            </p>
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-plus-lg me-2"></i> Tạo mã đầu tiên
+            </a>
+        </div>
+    }
+</div>

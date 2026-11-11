@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --text-color: #1e293b;
+    --text-muted: #64748b;
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --input-border: rgba(200, 200, 200, 0.5);
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.auth-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    /* Animated Gradient Background */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.glass-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    box-shadow: var(--glass-shadow);
+    text-align: center;
+}
+
+.brand-logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    display: inline-block;
+    background: -webkit-linear-gradient(45deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-header {
+    margin-bottom: 30px;
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.form-floating-custom {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-floating-custom input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    color: var(--text-color);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-floating-custom input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: #fff;
+}
+
+.form-floating-custom label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-left: 4px;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.auth-footer {
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Background Shapes */
+.shape {
+    position: absolute;
+    filter: blur(50px);
+    z-index: 1;
+    opacity: 0.6;
+    animation: float 10s infinite ease-in-out;
+}
+
+.shape-1 {
+    top: -10%;
+    left: -10%;
+    width: 300px;
+    height: 300px;
+    background: #ff9a9e;
+    border-radius: 50%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: #a18cd1;
+    border-radius: 50%;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-30px) scale(1.1);
+    }
+}
+
+.text-danger {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: block;
+}

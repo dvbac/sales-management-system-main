@@ -1,0 +1,47 @@
+@model SalesManagement.DAL.Entities.Product
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-danger text-white py-3 border-0">
+                    <h5 class="fw-bold mb-0 text-center"><i class="bi bi-trash me-2"></i> Xác nhận xóa sản phẩm</h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-exclamation-triangle text-danger display-1 mb-3"></i>
+                    <h4 class="fw-bold mb-2">Bạn có chắc chắn muốn xóa?</h4>
+                    <p class="text-muted mb-4 px-4">Sản phẩm <strong>@Model.Name</strong> (Mã: @Model.Code) sẽ bị xóa khỏi hệ thống. Hành động này không thể hoàn tác.</p>
+
+                    <div class="bg-light rounded-4 p-4 text-start mb-4">
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                             <span class="text-muted small">Danh mục</span>
+                             <span class="fw-bold">@Model.Category?.Name</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                             <span class="text-muted small">Giá bán</span>
+                             <span class="fw-bold text-primary">@Model.SellingPrice.ToString("N0") ₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                             <span class="text-muted small">Tồn kho</span>
+                             <span class="fw-bold">@Model.StockQuantity</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="ProductId" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-3 fw-bold shadow-sm">
+                                <i class="bi bi-trash-fill me-2"></i> Đồng ý xóa
+                            </button>
+                            <a asp-action="Index" class="btn btn-light btn-lg rounded-3 fw-medium border">Quay lại danh sách</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

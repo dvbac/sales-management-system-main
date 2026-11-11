@@ -1,0 +1,88 @@
+@model SalesManagement.Web.Models.ProductViewModel
+
+@{
+    ViewData["Title"] = "Tạo sản phẩm";
+}
+
+<h1>Tạo sản phẩm</h1>
+
+<h4>Thông tin sản phẩm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Code" class="control-label">Mã sản phẩm</label>
+                    <input asp-for="Code" class="form-control" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                     <label asp-for="CategoryId" class="control-label">Danh mục</label>
+                    <select asp-for="CategoryId" class ="form-select" asp-items="ViewBag.CategoryId"></select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="control-label">Tên sản phẩm</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="ImportPrice" class="control-label">Giá nhập</label>
+                    <input asp-for="ImportPrice" class="form-control" />
+                    <span asp-validation-for="ImportPrice" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="SellingPrice" class="control-label">Giá bán</label>
+                    <input asp-for="SellingPrice" class="form-control" />
+                    <span asp-validation-for="SellingPrice" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                     <label asp-for="Vatrate" class="control-label">Thuế VAT (%)</label>
+                    <input asp-for="Vatrate" class="form-control" />
+                    <span asp-validation-for="Vatrate" class="text-danger"></span>
+                </div>
+            </div>
+
+             <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="StockQuantity" class="control-label">Số lượng tồn kho</label>
+                    <input asp-for="StockQuantity" class="form-control" />
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                     <label asp-for="Status" class="control-label">Trạng thái</label>
+                     <select asp-for="Status" class="form-select">
+                         <option value="Active">Hoạt động</option>
+                         <option value="Inactive">Ngừng hoạt động</option>
+                     </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="control-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="control-label">Hình ảnh sản phẩm</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*" />
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Tạo" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

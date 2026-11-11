@@ -1,0 +1,41 @@
+@model SalesManagement.DAL.Entities.Product
+
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="fw-bold mb-0 text-danger">Xóa sản phẩm</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-center mb-4">Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+                
+                <div class="bg-light p-3 rounded mb-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Mã sản phẩm</dt>
+                        <dd class="col-sm-8 fw-bold">@Model.Code</dd>
+
+                        <dt class="col-sm-4">Tên sản phẩm</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Danh mục</dt>
+                        <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+                        <dt class="col-sm-4">Giá bán</dt>
+                        <dd class="col-sm-8 text-primary">@Model.SellingPrice.ToString("N0") ₫</dd>
+                    </dl>
+                </div>
+
+                <form asp-action="Delete" class="text-center">
+                    <input type="hidden" asp-for="ProductId" />
+                    <button type="submit" class="btn btn-danger px-4 rounded-pill">Xác nhận xóa</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill ms-2">Hủy bỏ</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

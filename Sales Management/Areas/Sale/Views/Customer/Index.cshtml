@@ -1,0 +1,98 @@
+@model SalesManagement.Web.Areas.Sale.Models.PaginatedList<SalesManagement.DAL.Entities.Customer>
+
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+    Layout = "_SaleLayout";
+}
+
+<div class="card border-0 shadow-sm" style="border-radius: 12px;">
+    <div class="card-header bg-white border-0 py-3">
+        <h5 class="fw-bold mb-0">Danh sách khách hàng</h5>
+    </div>
+    <div class="card-body">
+        
+        <!-- Filter & Search -->
+        <form asp-action="Index" method="get" class="mb-4">
+             <div class="input-group" style="max-width: 400px;">
+                <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tìm tên, email hoặc SĐT...">
+                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Khách hàng</th>
+                        <th>Liên hệ</th>
+                        <th>Loại khách</th>
+                        <th>Cấp độ</th>
+                        <th>Đơn hàng</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr style="cursor: pointer;" onclick="window.location='@Url.Action("Details", new { id = item.CustomerId })'">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: 600;">
+                                        @item.FullName?.Substring(0,1).ToUpper()
+                                    </div>
+                                    <span class="fw-bold">@item.FullName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="small"><i class="bi bi-envelope me-1"></i> @item.Email</span>
+                                    <span class="small text-muted"><i class="bi bi-phone me-1"></i> @item.PhoneNumber</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@item.Type</span>
+                            </td>
+                            <td>
+                                 @{
+                                    var levelColor = item.CustomerLevel switch
+                                    {
+                                        "VIP" => "warning",
+                                        "Potential" => "info",
+                                        _ => "secondary"
+                                    };
+                                }
+                                <span class="badge bg-@levelColor bg-opacity-25 text-@levelColor">@item.CustomerLevel</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold">@item.Orders.Count</span> <span class="text-muted small">đơn</span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-primary"><i class="bi bi-person-lines-fill"></i> Hồ sơ</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+           <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted small">
+                Trang @Model.PageIndex / @Model.TotalPages
+            </div>
+            <div>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-sm btn-outline-secondary @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-sm btn-outline-secondary @(!Model.HasNextPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

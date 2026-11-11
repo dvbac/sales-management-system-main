@@ -1,0 +1,236 @@
+@model SalesManagement.Web.Areas.Admin.Models.RevenueReportViewModel
+@{
+    ViewData["Title"] = "Báo cáo Doanh thu";
+    var vn = new System.Globalization.CultureInfo("vi-VN");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Báo cáo &amp; Phân tích
+    </h3>
+    <a id="exportBtn"
+       asp-action="ExportRevenue"
+       asp-route-timeframe="@Model.Timeframe"
+       class="btn btn-outline-success">
+        <i class="bi bi-file-earmark-excel me-2"></i>Xuất CSV
+    </a>
+</div>
+
+<partial name="_ReportTabs" />
+
+<!-- ── Filters ─────────────────────────────────────────────────────────────── -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form id="filterForm" method="get" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label class="col-form-label fw-bold">Thời gian:</label>
+            </div>
+            <div class="col-auto">
+                <select id="timeframeSelect" name="timeframe" class="form-select" disabled>
+                    @{ var tf = Model.Timeframe; }
+                    @if (tf == "week")  { <option value="week" selected>Tuần này</option> }
+                    else               { <option value="week">Tuần này</option> }
+                    @if (tf == "month") { <option value="month" selected>Tháng này</option> }
+                    else               { <option value="month">Tháng này</option> }
+                    @if (tf == "year")  { <option value="year" selected>Năm nay</option> }
+                    else               { <option value="year">Năm nay</option> }
+                    @if (tf == "all")   { <option value="all" selected>Toàn bộ thời gian</option> }
+                    else               { <option value="all">Toàn bộ thời gian</option> }
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="startDate" id="startDate"
+                       class="form-control"
+                       value="@(Model.StartDate.ToString("yyyy-MM-dd"))"
+                       disabled />
+            </div>
+            <div class="col-auto">
+                <span class="text-muted">→</span>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="endDate" id="endDate"
+                       class="form-control"
+                       value="@(Model.EndDate.ToString("yyyy-MM-dd"))"
+                       disabled />
+            </div>
+            <div class="col-auto" id="loadingSpinner" style="display:none;">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Đang tải...</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ── KPI Cards ───────────────────────────────────────────────────────────── -->
+<div class="row g-4 mb-4">
+    @{
+        var cards = new[]
+        {
+            new { Label="Doanh thu", Value=Model.TotalRevenue.ToString("C0", vn), Growth=Model.RevenueGrowth, Color="primary",  Icon="bi-currency-dollar"  },
+            new { Label="Số đơn hàng", Value=Model.TotalOrders.ToString("N0"), Growth=Model.OrdersGrowth, Color="success", Icon="bi-bag-check-fill" },
+            new { Label="Giá trị TB/đơn", Value=Model.AverageOrderValue.ToString("C0", vn), Growth=0m, Color="info",    Icon="bi-receipt"          },
+            new { Label="Tỷ lệ hoàn thành", Value=$"{Model.CompletionRate:F1}%", Growth=0m, Color="warning", Icon="bi-patch-check-fill" },
+        };
+    }
+    @foreach (var c in cards)
+    {
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 kpi-card">
+                <div class="card-body d-flex align-items-center gap-3 p-3">
+                    <div class="kpi-icon text-@c.Color">
+                        <i class="bi @c.Icon fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="text-xs text-uppercase text-muted fw-bold mb-1">@c.Label</div>
+                        <div class="h5 fw-bold mb-0">@c.Value</div>
+                        @if (c.Growth != 0)
+                        {
+                            <div class="mt-1 text-xs @(c.Growth >= 0 ? "text-success" : "text-danger")">
+                                <i class="bi @(c.Growth >= 0 ? "bi-arrow-up-circle" : "bi-arrow-down-circle")"></i>
+                                @Math.Abs(c.Growth)% so với kỳ trước
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ── Chart ───────────────────────────────────────────────────────────────── -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 fw-bold text-primary"><i class="bi bi-graph-up me-2"></i>Biểu đồ doanh thu</h6>
+        <small class="text-muted">
+            @Model.StartDate.ToString("dd/MM/yyyy") — @Model.EndDate.ToString("dd/MM/yyyy")
+        </small>
+    </div>
+    <div class="card-body">
+        <!-- Skeleton shown while JS initialises chart -->
+        <div id="chartSkeleton" class="skeleton-box" style="height:400px;border-radius:8px;"></div>
+        <div class="chart-area" id="revenueChartWrapper" style="height:400px; display:none;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<style>
+    .kpi-card { transition: transform .2s, box-shadow .2s; }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1) !important; }
+    .kpi-icon { min-width: 48px; text-align: center; }
+    .skeleton-box {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+    }
+    @@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
+    <script>
+    (function () {
+        // ── 1. Enable filters + debounce ──────────────────────────────────────
+        const form       = document.getElementById('filterForm');
+        const tfSelect   = document.getElementById('timeframeSelect');
+        const startInput = document.getElementById('startDate');
+        const endInput   = document.getElementById('endDate');
+        const spinner    = document.getElementById('loadingSpinner');
+
+        // Enable controls now that JS is loaded
+        tfSelect.disabled   = false;
+        startInput.disabled = false;
+        endInput.disabled   = false;
+
+        let debounceTimer = null;
+
+        function submitWithDebounce() {
+            clearTimeout(debounceTimer);
+            spinner.style.display = 'block';
+            debounceTimer = setTimeout(function () { form.submit(); }, 400);
+        }
+
+        tfSelect.addEventListener('change', submitWithDebounce);
+        startInput.addEventListener('change', submitWithDebounce);
+        endInput.addEventListener('change',   submitWithDebounce);
+
+        // ── 2. Initialise chart after DOM + Chart.js are ready ────────────────
+        function initChart() {
+            const labels      = @Html.Raw(Json.Serialize(Model.ChartLabels));
+            const revenueData = @Html.Raw(Json.Serialize(Model.RevenueChartData));
+            const ordersData  = @Html.Raw(Json.Serialize(Model.OrdersChartData));
+
+            const skeleton = document.getElementById('chartSkeleton');
+            const wrapper  = document.getElementById('revenueChartWrapper');
+
+            skeleton.style.display = 'none';
+            wrapper.style.display  = 'block';
+
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu',
+                        data: revenueData,
+                        backgroundColor: 'rgba(78,115,223,0.08)',
+                        borderColor: 'rgba(78,115,223,1)',
+                        borderWidth: 2,
+                        pointRadius: labels.length > 60 ? 0 : 3,   // hide dots for dense data
+                        tension: 0.35,
+                        fill: true
+                    }, {
+                        label: 'Đơn hàng',
+                        data: ordersData,
+                        type: 'bar',
+                        backgroundColor: 'rgba(28,200,138,0.45)',
+                        borderColor: '#1cc88a',
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 400 },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            ticks: {
+                                callback: v => new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency', currency: 'VND',
+                                    maximumSignificantDigits: 3
+                                }).format(v)
+                            },
+                            grid: { color: 'rgb(234,236,244)', drawBorder: false }
+                        },
+                        y1: { position: 'right', grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const isRevenue = ctx.dataset.label === 'Doanh thu';
+                                    const val = ctx.parsed.y;
+                                    return ctx.dataset.label + ': ' + (isRevenue
+                                        ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+                                        : val);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Wait for Chart.js deferred load
+        if (typeof Chart !== 'undefined') {
+            initChart();
+        } else {
+            document.querySelector('script[src*="chart.js"]').addEventListener('load', initChart);
+        }
+    })();
+    </script>
+}

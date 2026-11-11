@@ -1,0 +1,62 @@
+@model SalesManagement.DAL.Entities.User
+
+@{
+    ViewData["Title"] = "Xóa người dùng";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card-modern">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4 text-warning">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h3 class="fw-bold mb-3">Xác nhận xóa người dùng?</h3>
+                    <p class="text-muted mb-4">
+                        Bạn đang chuẩn bị xóa người dùng <strong>@Model.Username</strong> (@Model.FullName).<br>
+                        Hành động này sẽ đánh dấu tài khoản là "Đã xóa" và người dùng sẽ không thể đăng nhập được nữa.
+                    </p>
+                    
+                    @if (Model.Role == "Sales")
+                    {
+                        <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill me-2 fs-4"></i>
+                            <div>
+                                <strong>Cảnh báo quan trọng:</strong><br>
+                                Tài khoản này là <strong>Nhân viên kinh doanh (Sales)</strong>. Việc xóa tài khoản này sẽ <strong>tự động xóa hồ sơ nhân viên</strong> tương ứng khỏi hệ thống.
+                            </div>
+                        </div>
+                    }
+
+                    <div class="card bg-light border-0 mb-4 text-start">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-envelope me-2 text-muted"></i>
+                                <span>@Model.Email</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-person-badge me-2 text-muted"></i>
+                                <span>@Model.Role</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calendar3 me-2 text-muted"></i>
+                                <span>Ngày tham gia: @Model.CreatedDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-action="Index" class="btn btn-light rounded-pill px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-danger rounded-pill px-4">Xác nhận xóa</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

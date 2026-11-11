@@ -1,0 +1,43 @@
+@model SalesManagement.Web.Models.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Xóa nhân viên";
+}
+
+<h1>Xóa nhân viên</h1>
+
+<h3>Bạn có chắc chắn muốn xóa nhân viên này không?</h3>
+<div>
+    <h4>@Model.FullName</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Chức vụ
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Position)
+        </dd>
+        <dt class = "col-sm-2">
+            Phòng ban
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Department)
+        </dd>
+         <dt class = "col-sm-2">
+            Email
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.Email
+        </dd>
+    </dl>
+    
+    <div class="alert alert-warning">
+        <strong>Cảnh báo:</strong> Hành động này thực hiện xóa mềm. Dữ liệu sẽ được giữ lại trong lịch sử nhưng nhân viên sẽ không còn quyền truy cập hệ thống nữa.
+    </div>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="EmployeeId" />
+        <input type="submit" value="Xóa" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+    </form>
+</div>

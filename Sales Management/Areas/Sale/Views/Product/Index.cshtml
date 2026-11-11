@@ -1,0 +1,99 @@
+@model SalesManagement.Web.Areas.Sale.Models.PaginatedList<SalesManagement.DAL.Entities.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="card border-0 shadow-sm" style="border-radius: 12px;">
+    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Danh sách sản phẩm</h5>
+        <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-3">
+            <i class="bi bi-plus-lg"></i> Thêm mới
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="mb-4">
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th style="width: 80px;">Ảnh</th>
+                        <th>Mã SP</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Vốn</th>
+                        <th>Giá bán</th>
+                        <th>Tồn kho</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@(item.ProductImages.FirstOrDefault(p => p.IsPrimary == true)?.ImageUrl ?? "https://placehold.co/50")" 
+                                     class="rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://placehold.co/50'"/>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@item.Code</span></td>
+                            <td class="fw-bold">@item.Name</td>
+                            <td class="text-muted">@((item.ImportPrice ?? 0m).ToString("N0"))</td>
+                            <td class="text-primary fw-bold">@(item.SellingPrice.ToString("N0"))</td>
+                            <td>
+                                @if(item.StockQuantity < 10)
+                                {
+                                    <span class="text-danger fw-bold">@item.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    @item.StockQuantity
+                                }
+                            </td>
+                            <td>
+                                @if (item.Status == "Active")
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">Ngừng bán</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted small">
+                Trang @Model.PageIndex / @Model.TotalPages
+            </div>
+            <div>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-sm btn-outline-secondary @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-sm btn-outline-secondary @(!Model.HasNextPage ? "disabled" : "")">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+@model IEnumerable<SalesManagement.DAL.Entities.User>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Quản lý người dùng</h3>
+        <p class="text-muted mb-0">Theo dõi và quản lý tài khoản khách hàng</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i> Thêm người dùng
+        </a>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="get" action="@Url.Action("Index")" class="input-group" style="max-width: 350px;">
+           <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-search text-secondary"></i></span>
+           <input type="text" name="search" class="form-control bg-light border-start-0 rounded-end-pill ps-0" placeholder="Tìm kiếm theo tên, email, sđt..." value="@ViewBag.CurrentFilter">
+        </form>
+        <div class="d-flex gap-2">
+             <div class="dropdown">
+                <button class="btn btn-outline-secondary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-filter"></i> Lọc vai trò
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="@Url.Action("Index", new { role = "", search = ViewBag.CurrentFilter })">Tất cả</a></li>
+                    <li><a class="dropdown-item" href="@Url.Action("Index", new { role = "Admin", search = ViewBag.CurrentFilter })">Admin</a></li>
+                    <li><a class="dropdown-item" href="@Url.Action("Index", new { role = "Sales", search = ViewBag.CurrentFilter })">Sales</a></li>
+                    <li><a class="dropdown-item" href="@Url.Action("Index", new { role = "Customer", search = ViewBag.CurrentFilter })">Customer</a></li>
+                </ul>
+            </div>
+             <a href="@Url.Action("Index", new { sortOrder = ViewBag.DateSortParm, search = ViewBag.CurrentFilter, role = ViewBag.CurrentRole })" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-sort-down"></i> Sắp xếp Ngày</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern w-100">
+            <thead>
+                <tr>
+                    <th>Khách hàng</th>
+                    <th>Email</th>
+                    <th><a href="@Url.Action("Index", new { sortOrder = ViewBag.DateSortParm, search = ViewBag.CurrentFilter, role = ViewBag.CurrentRole })" class="text-decoration-none text-muted">Ngày đăng ký <i class="bi bi-arrow-down-up small"></i></a></th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @{
+                                        var avatarUrl = !string.IsNullOrEmpty(item.Avatar) ? item.Avatar : $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(item.FullName ?? item.Username)}&background=random";
+                                    }
+                                    <img src="@avatarUrl" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                    <div>
+                                        <div class="fw-bold">@(item.FullName ?? item.Username)</div>
+                                        <div class="small text-muted">@item.Username</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.Email</td>
+                            <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (item.Role == "Admin")
+                                {
+                                    <span class="badge-modern badge-danger-modern">Admin</span>
+                                }
+                                else if (item.Role == "Sales")
+                                {
+                                    <span class="badge-modern badge-warning-modern">Sales</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-modern badge-info-modern">Khách hàng</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge-modern badge-success-modern">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-modern badge-secondary-modern">Đã khóa</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-sm btn-icon btn-light rounded-circle" title="Sửa"><i class="bi bi-pencil"></i></a>
+                                @if (item.Role != "Admin") // Prevent deleting admins mostly
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-sm btn-icon btn-light rounded-circle text-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                     <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">Không tìm thấy người dùng nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Simplified Pagination info (Optional) -->
+    <div class="mt-4 text-center text-muted small">
+        Hiển thị @(Model?.Count() ?? 0) kết quả
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/systemHub").build();
+        connection.on("ReceiveUpdate", function (message) {
+            if (message === "ReloadData" || message === "UserDeleted") {
+                location.reload();
+            }
+        });
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+    </script>
+}

@@ -1,0 +1,103 @@
+@model SalesManagement.DAL.Entities.Employee
+@{
+    ViewData["Title"] = "Thêm nhân viên mới";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
+    <div>
+        <h3 class="fw-bold text-dark">Thêm nhân viên</h3>
+        <p class="text-muted mb-0">Tạo tài khoản và hồ sơ nhân sự mới</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <!-- User Account Info -->
+            <div class="card-modern mb-4">
+                <h5 class="mb-4 text-dark fw-bold border-bottom pb-2">Thông tin tài khoản</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Họ và tên <span class="text-danger">*</span></label>
+                        <input name="FullName" class="form-control" required placeholder="Nhập họ tên đầy đủ" value="@ViewBag.FullName" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Email (Tên đăng nhập) <span class="text-danger">*</span></label>
+                        <input name="Email" type="email" class="form-control" required placeholder="example@company.com" value="@ViewBag.Email" />
+                        @Html.ValidationMessage("Email", new { @class = "text-danger small" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Mật khẩu <span class="text-danger">*</span></label>
+                        <input name="Password" type="password" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Vai trò <span class="text-danger">*</span></label>
+                        <select name="Role" class="form-select">
+                            <option value="Sales">Nhân viên kinh doanh (Sales)</option>
+                            <option value="Admin">Quản trị viên (Admin)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details -->
+             <div class="card-modern mb-4">
+                <h5 class="mb-4 text-dark fw-bold border-bottom pb-2">Thông tin công việc</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Position" class="form-label fw-bold small text-muted">Chức vụ</label>
+                        <input asp-for="Position" class="form-control" placeholder="VD: Trưởng nhóm kinh doanh" />
+                        <span asp-validation-for="Position" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Department" class="form-label fw-bold small text-muted">Phòng ban</label>
+                        <input asp-for="Department" class="form-control" placeholder="VD: Phòng Kinh doanh 1" />
+                        <span asp-validation-for="Department" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="ContractType" class="form-label fw-bold small text-muted">Loại hợp đồng</label>
+                         <select asp-for="ContractType" class="form-select">
+                            <option value="FullTime">Toàn thời gian</option>
+                            <option value="PartTime">Bán thời gian</option>
+                            <option value="Intern">Thực tập sinh</option>
+                        </select>
+                        <span asp-validation-for="ContractType" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="StartWorkingDate" class="form-label fw-bold small text-muted">Ngày bắt đầu</label>
+                        <input asp-for="StartWorkingDate" class="form-control" type="date" />
+                        <span asp-validation-for="StartWorkingDate" class="text-danger"></span>
+                    </div>
+                     <div class="col-md-4 mb-3">
+                        <label asp-for="BasicSalary" class="form-label fw-bold small text-muted">Lương cơ bản</label>
+                        <div class="input-group">
+                            <input asp-for="BasicSalary" class="form-control" type="number" step="1000" />
+                            <span class="input-group-text">cents</span>
+                        </div>
+                        <span asp-validation-for="BasicSalary" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <a asp-action="Index" class="btn btn-light rounded-pill px-4 me-2">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary rounded-pill px-5">Lưu nhân viên</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

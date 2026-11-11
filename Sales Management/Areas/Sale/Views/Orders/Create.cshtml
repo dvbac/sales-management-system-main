@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Create Order";
+    var customers = ViewBag.Customers as List<SalesManagement.DAL.Entities.Customer>;
+    var products = ViewBag.Products as List<SalesManagement.DAL.Entities.Product>;
+}
+
+<h2 class="mb-4">Create Order</h2>
+
+<form asp-action="Create" method="post">
+    <!-- CUSTOMER -->
+    <div class="mb-3">
+        <label class="form-label fw-bold">Customer</label>
+        <select name="customerId" class="form-select" required>
+            <option value="">-- Select customer --</option>
+            @foreach (var c in customers)
+            {
+                <option value="@c.CustomerId">
+                    @c.FullName - @c.PhoneNumber
+                </option>
+            }
+        </select>
+    </div>
+
+    <hr />
+
+    <!-- PRODUCTS -->
+    <h5 class="mb-3">Products</h5>
+
+    <table class="table table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:50px">#</th>
+                <th>Product</th>
+                <th style="width:120px">Price</th>
+                <th style="width:150px">Quantity</th>
+                <th style="width:120px">Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < products.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox"
+                               value="@products[i].ProductId"
+                               name="productIds" />
+                    </td>
+
+                    <td>
+                        @products[i].Name
+                    </td>
+
+                    <td class="text-danger fw-bold">
+                        @products[i].SellingPrice.ToString("N0") ?
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               name="quantities"
+                               class="form-control"
+                               min="1"
+                               max="@products[i].StockQuantity"
+                               value="1" />
+                    </td>
+
+                    <td>
+                        @products[i].StockQuantity
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success px-4">
+            <i class="bi bi-save"></i> Create Order
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary ms-2">
+            Back
+        </a>
+    </div>
+</form>

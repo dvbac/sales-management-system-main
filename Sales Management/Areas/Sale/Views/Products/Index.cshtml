@@ -1,0 +1,111 @@
+@model IEnumerable<SalesManagement.DAL.Entities.Product>
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center bg-white p-3 rounded-4 shadow-sm">
+            <div>
+                <h3 class="fw-bold mb-0">Quản lý sản phẩm</h3>
+                <p class="text-muted mb-0">Xem và quản lý các mặt hàng hiện có trong kho</p>
+            </div>
+            <a asp-action="Create" class="btn btn-primary-modern px-4 py-2 text-white text-decoration-none">
+                <i class="bi bi-plus-lg me-2"></i> Thêm sản phẩm mới
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4">Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Danh Mục</th>
+                            <th>Giá Bán</th>
+                            <th>Tồn Kho</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-medium text-secondary">@item.Code</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-3 bg-light p-1 me-3 text-center" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                           <i class="bi bi-box fs-4 text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.Name</div>
+                                            <small class="text-muted">@item.Description</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-primary border rounded-pill px-3">@(item.Category?.Name ?? "N/A")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark">@item.SellingPrice.ToString("N0") ₫</span>
+                                </td>
+                                <td>
+                                    <span class="fw-medium @(item.StockQuantity < 10 ? "text-danger" : "text-dark")">@item.StockQuantity</span>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Active")
+                                    {
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-3">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">@item.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-light btn-sm rounded-3 px-3 border" title="Chỉnh sửa">
+                                            <i class="bi bi-pencil-square text-primary"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-light btn-sm rounded-3 px-3 border" title="Chi tiết">
+                                            <i class="bi bi-eye text-info"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-light btn-sm rounded-3 px-3 border" title="Xóa">
+                                            <i class="bi bi-trash text-danger"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --accent-color: #6610f2;
+    }
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    .bg-success-subtle { background-color: #d1e7dd; }
+    .bg-secondary-subtle { background-color: #e2e3e5; }
+</style>

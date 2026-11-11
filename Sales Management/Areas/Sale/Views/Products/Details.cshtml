@@ -1,0 +1,83 @@
+@model SalesManagement.DAL.Entities.Product
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    Layout = "_SaleLayout";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-info-circle me-2"></i> Chi tiết sản phẩm</h5>
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary-modern btn-sm px-4 py-2">
+                            <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-4 py-2 border">Quay lại danh sách</a>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <div class="row g-5">
+                        <div class="col-md-5">
+                            <div class="product-image-container mb-4">
+                                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center border shadow-sm p-4" style="height: 400px; width: 100%;">
+                                    <i class="bi bi-box-seam text-primary display-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-2">
+                                <span class="badge bg-primary rounded-pill px-3">@Model.Category?.Name</span>
+                                <span class="badge bg-light text-muted border rounded-pill px-3 ms-2">Mã: @Model.Code</span>
+                            </div>
+                            <h2 class="fw-bold text-dark mb-3">@Model.Name</h2>
+                            <p class="text-muted mb-4 lead">@Model.Description</p>
+
+                            <div class="price-box bg-light rounded-4 p-4 mb-4 border-0">
+                                <div class="mb-2 text-muted small text-uppercase fw-bold ls-1">Giá bán hiện tại</div>
+                                <h1 class="display-5 text-primary fw-bold mb-0">@Model.SellingPrice.ToString("N0") <small class="h3">₫</small></h1>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-sm-6">
+                                    <div class="card border-0 bg-light p-3 rounded-4 shadow-sm h-100">
+                                        <div class="text-muted small mb-1">Tồn kho hiện tại</div>
+                                        <h4 class="fw-bold mb-0 @(Model.StockQuantity < 10 ? "text-danger" : "text-dark")">@Model.StockQuantity đơn vị</h4>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card border-0 bg-light p-3 rounded-4 shadow-sm h-100">
+                                        <div class="text-muted small mb-1">Trạng thái</div>
+                                        <h4 class="fw-bold mb-0 @(Model.Status == "Active" ? "text-success" : "text-secondary")">@(Model.Status == "Active" ? "Công khai" : "Tạm dừng")</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-muted small border-top pt-3">
+                                <div class="mb-1"><i class="bi bi-calendar-event me-2"></i> Ngày tạo: @Model.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</div>
+                                <div><i class="bi bi-clock-history me-2"></i> Cập nhật mới nhất: @Model.UpdatedDate?.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-primary-modern {
+        background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        color: white;
+    }
+    .ls-1 { letter-spacing: 1px; }
+</style>

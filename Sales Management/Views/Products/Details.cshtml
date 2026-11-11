@@ -1,0 +1,82 @@
+@model SalesManagement.Web.Models.ProductViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Chi tiết sản phẩm</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item active">@Model.Name</li>
+    </ol>
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white border-bottom-0">
+            <h4 class="mb-0 text-primary">@Model.Name</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-5 mb-4 mb-md-0">
+                     @if (!string.IsNullOrEmpty(Model.PrimaryImageUrl))
+                    {
+                        <div class="border rounded shadow-sm overflow-hidden">
+                             <img src="@Model.PrimaryImageUrl" class="d-block w-100 object-fit-cover" style="height: 400px;" alt="Product Image">
+                        </div>
+                    }
+                    else
+                    {
+                        <img src="/images/no-image.png" class="img-fluid rounded shadow-sm border" alt="Không có ảnh" />
+                    }
+                </div>
+                <div class="col-md-7">
+                    <div class="card shadow-none border-light bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title border-bottom pb-2">Thông tin chi tiết</h5>
+                            <dl class="row mt-3">
+                                <dt class = "col-sm-4 text-muted">Mã sản phẩm</dt>
+                                <dd class = "col-sm-8 fw-bold text-dark">@Model.Code</dd>
+                                
+                                <dt class = "col-sm-4 text-muted">Danh mục</dt>
+                                <dd class = "col-sm-8">
+                                    <span class="badge bg-info text-dark">@Model.CategoryName</span>
+                                </dd>
+
+                                <dt class = "col-sm-4 text-muted">Giá bán (VNĐ)</dt>
+                                <dd class = "col-sm-8 text-primary fw-bold fs-5">@Model.SellingPrice.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</dd>
+
+                                <dt class = "col-sm-4 text-muted">Giá bán (VNĐ)</dt>
+                                <dd class = "col-sm-8 text-success fw-bold">@Model.SellingPrice.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) VNĐ</dd>
+                                
+                                <dt class = "col-sm-4 text-muted">Tồn kho</dt>
+                                <dd class = "col-sm-8">
+                                    @if(Model.StockQuantity < 10) {
+                                         <span class="text-danger fw-bold">@Model.StockQuantity (Sắp hết)</span>
+                                    } else {
+                                        @Model.StockQuantity
+                                    }
+                                </dd>
+                                
+                                <dt class = "col-sm-4 text-muted">Trạng thái</dt>
+                                <dd class = "col-sm-8">
+                                    <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                        @(Model.Status == "Active" ? "Hoạt động" : Model.Status)
+                                    </span>
+                                </dd>
+
+                                <dt class = "col-sm-4 text-muted">Mô tả</dt>
+                                <dd class = "col-sm-8">@Model.Description</dd>
+                            </dl>
+                        </div>
+                    </div>
+                     <div class="mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

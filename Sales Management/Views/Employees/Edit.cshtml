@@ -1,0 +1,61 @@
+@model SalesManagement.Web.Models.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa nhân viên";
+}
+
+<h1>Chỉnh sửa nhân viên</h1>
+
+<h4>@Model.FullName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="mb-3">
+                <label asp-for="Position" class="control-label"></label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+             <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BasicSalary" class="control-label"></label>
+                    <input asp-for="BasicSalary" class="form-control" />
+                    <span asp-validation-for="BasicSalary" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="StartWorkingDate" class="control-label"></label>
+                    <input asp-for="StartWorkingDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartWorkingDate" class="text-danger"></span>
+                </div>
+            </div>
+             <div class="mb-3">
+                <label asp-for="Department" class="control-label"></label>
+                <input asp-for="Department" class="form-control" />
+                <span asp-validation-for="Department" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ContractType" class="control-label"></label>
+                <select asp-for="ContractType" class="form-select">
+                    <option value="FullTime">Toàn thời gian</option>
+                    <option value="PartTime">Bán thời gian</option>
+                    <option value="Intern">Thực tập sinh</option>
+                    <option value="Contract">Hợp đồng</option>
+                </select>
+                <span asp-validation-for="ContractType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

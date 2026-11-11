@@ -1,0 +1,146 @@
+@model IEnumerable<SalesManagement.BLL.DTOs.WishlistDto>
+@{
+    ViewData["Title"] = "Danh sách Yêu thích";
+}
+
+<div class="wishlist-container py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center section-title">Sản Phẩm Yêu Thích Của Bạn ❤️</h2>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 empty-state">
+                <i class="fas fa-heart-broken fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Danh sách yêu thích của bạn đang trống!</h4>
+                <a href="/Products" class="btn btn-primary mt-4 btn-lg rounded-pill px-5">Tiếp tục mua sắm</a>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 pt-3">
+                @foreach (var item in Model)
+                {
+                    <div class="col" id="wishlist-item-@item.ProductId">
+                        <div class="card h-100 wishlist-card border-0 shadow-sm">
+                            <div class="position-relative picture-wrapper">
+                                <img src="@(!string.IsNullOrEmpty(item.ImageUrl) ? item.ImageUrl : "/images/no-image.png")" class="card-img-top wishlist-img" alt="@item.ProductName">
+                                <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle btn-remove shadow" 
+                                        onclick="removeFromWishlist(@item.ProductId)" title="Xóa">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="card-body d-flex flex-column text-center bg-white">
+                                <h5 class="card-title product-title flex-grow-1">@item.ProductName</h5>
+                                <p class="card-text text-danger fw-bold fs-5 mb-3">@item.Price.ToString("N0") VNĐ</p>
+                                <a href="/Products/Details/@item.ProductId" class="btn btn-outline-primary mt-auto rounded-pill fw-medium">
+                                    <i class="fas fa-shopping-cart me-1"></i> Xem Chi Tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .section-title {
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+    }
+    .wishlist-card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .wishlist-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+    .picture-wrapper {
+        overflow: hidden;
+    }
+    .wishlist-img {
+        height: 280px;
+        object-fit: contain;
+        transition: transform 0.6s ease;
+        padding: 10px;
+    }
+    .wishlist-card:hover .wishlist-img {
+        transform: scale(1.08);
+    }
+    .product-title {
+        font-size: 1.05rem;
+        color: #2b2b2b;
+        font-weight: 600;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+    .btn-remove {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+    .wishlist-card:hover .btn-remove {
+        opacity: 1;
+    }
+    .empty-state {
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        border-radius: 20px;
+        padding: 60px 20px;
+        border: 1px dashed #d1d1d1;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function removeFromWishlist(productId) {
+        Swal.fire({
+            title: 'Bạn chắc chứ?',
+            text: "Xóa sản phẩm này khỏi danh sách yêu thích?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#95a5a6',
+            confirmButtonText: 'Đồng ý, xóa!',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Wishlist/Remove',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#wishlist-item-' + productId).animate({ opacity: 0, height: 0, padding: 0, margin: 0 }, 400, function() { 
+                                $(this).remove();
+                                if ($('.wishlist-card').length === 0) {
+                                    location.reload();
+                                }
+                            });
+                            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                            Toast.fire({ icon: 'success', title: res.message });
+                        } else {
+                            Swal.fire('Lỗi', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi', 'Có lỗi kết nối máy chủ.', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
