@@ -33,7 +33,6 @@ namespace SalesManagement.DAL.Repositories
         {
             return await _dbSet
                 .Include(e => e.User)
-                .Include(e => e.TimeAttendances)
                 .FirstOrDefaultAsync(m => m.EmployeeId == (int)id);
         }
     }

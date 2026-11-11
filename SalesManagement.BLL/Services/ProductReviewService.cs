@@ -48,6 +48,7 @@ public class ProductReviewService : IProductReviewService
             ProductId = productId,
             Rating = rating,
             Comment = comment,
+            CreatedDate = System.DateTime.Now,
             IsVerifiedPurchase = isPurchased
         };
 

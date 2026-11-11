@@ -54,17 +54,8 @@ CREATE INDEX IX_Users_Username ON Users(Username);
 GO
 
 -- ====================================================
--- II. HR – Shifts & Employees
+-- II. HR – Employees
 -- ====================================================
-
--- Bảng Shifts (ca làm việc)
-CREATE TABLE Shifts (
-    ShiftId   INT IDENTITY(1,1) PRIMARY KEY,
-    ShiftName NVARCHAR(50) NOT NULL,
-    StartTime TIME NOT NULL,
-    EndTime   TIME NOT NULL
-);
-GO
 
 -- Bảng Employees
 CREATE TABLE Employees (
@@ -75,13 +66,11 @@ CREATE TABLE Employees (
     HourlyWage       DECIMAL(18, 2),          -- lương theo giờ
     StartWorkingDate DATE,
     Department       NVARCHAR(100),
-    ShiftId          INT,                     -- ca làm việc mặc định
     ContractType     NVARCHAR(50),            -- Full-time, Part-time, Intern
     ContractFile     NVARCHAR(255),
     IsDeleted        BIT NOT NULL DEFAULT 0,
     ChangeHistory    NVARCHAR(MAX),
-    FOREIGN KEY (UserId)  REFERENCES Users(UserId)   ON DELETE CASCADE,
-    FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId)
+    FOREIGN KEY (UserId)  REFERENCES Users(UserId)   ON DELETE CASCADE
 );
 GO
 
@@ -106,93 +95,7 @@ CREATE TABLE Customers (
 GO
 
 -- ====================================================
--- IV. HR – Attendance, Payroll & Leave
--- ====================================================
-
--- Bảng TimeAttendances (chấm công)
-CREATE TABLE TimeAttendances (
-    AttendanceId    INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId      INT  NOT NULL,
-    ShiftId         INT,                              -- ca làm việc trong ngày
-    Date            DATE NOT NULL,
-    CheckInTime     DATETIME,
-    CheckOutTime    DATETIME,
-    Status          NVARCHAR(50),                     -- Present, Absent, Late, LeftEarly
-    Platform        NVARCHAR(50),                     -- Web, Mobile
-    Notes           NVARCHAR(MAX),
-    WorkHours       FLOAT NOT NULL DEFAULT 0,         -- số giờ làm thực tế
-    OvertimeHours   FLOAT NOT NULL DEFAULT 0,         -- số giờ tăng ca
-    MinutesLate     INT   NOT NULL DEFAULT 0,         -- số phút đi muộn
-    DeductionAmount DECIMAL(18, 2) NOT NULL DEFAULT 0,-- số tiền trừ lương
-    FOREIGN KEY (EmployeeId) REFERENCES Employees(EmployeeId),
-    FOREIGN KEY (ShiftId)    REFERENCES Shifts(ShiftId)
-);
-GO
-
--- Bảng SalaryComponents (thành phần lương: phụ cấp / khấu trừ)
-CREATE TABLE SalaryComponents (
-    SalaryComponentId INT IDENTITY(1,1) PRIMARY KEY,
-    Name              NVARCHAR(100) NOT NULL,
-    Type              NVARCHAR(20)  NOT NULL DEFAULT 'Allowance'
-                          CHECK (Type IN ('Allowance', 'Deduction')),
-    DefaultAmount     DECIMAL(18, 2) NOT NULL DEFAULT 0,
-    IsPercentage      BIT NOT NULL DEFAULT 0, -- nếu = 1 thì tính % trên BasicSalary
-    Description       NVARCHAR(255)
-);
-GO
-
--- Bảng EmployeeSalaryComponents (phụ cấp/khấu trừ riêng của từng nhân viên)
-CREATE TABLE EmployeeSalaryComponents (
-    Id                INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId        INT NOT NULL,
-    SalaryComponentId INT NOT NULL,
-    Amount            DECIMAL(18, 2) NOT NULL DEFAULT 0,
-    FOREIGN KEY (EmployeeId)        REFERENCES Employees(EmployeeId) ON DELETE CASCADE,
-    FOREIGN KEY (SalaryComponentId) REFERENCES SalaryComponents(SalaryComponentId)
-);
-GO
-
--- Bảng Payrolls (bảng lương tháng)
-CREATE TABLE Payrolls (
-    PayrollId       INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId      INT NOT NULL,
-    Month           INT NOT NULL,
-    Year            INT NOT NULL,
-    BaseSalary      DECIMAL(18, 2) NOT NULL DEFAULT 0,
-    Benefits        DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- phúc lợi
-    Bonus           DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- thưởng
-    Penalty         DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- phạt
-    TotalAllowances DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- tổng phụ cấp
-    TotalDeductions DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- tổng khấu trừ
-    TaxAmount       DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- thuế TNCN
-    NetSalary       DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- lương thực lĩnh
-    TotalSalary     DECIMAL(18, 2) NOT NULL DEFAULT 0,   -- tổng lương gross
-    Status          NVARCHAR(50) DEFAULT 'Pending'       -- Pending, Paid
-                        CHECK (Status IN ('Pending', 'Paid')),
-    CreatedDate     DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (EmployeeId) REFERENCES Employees(EmployeeId)
-);
-GO
-
--- Bảng LeaveRequests (đơn xin nghỉ phép)
-CREATE TABLE LeaveRequests (
-    LeaveRequestId INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId     INT NOT NULL,
-    StartDate      DATE NOT NULL,
-    EndDate        DATE NOT NULL,
-    Reason         NVARCHAR(MAX) NOT NULL,
-    Status         NVARCHAR(20) NOT NULL DEFAULT 'Pending'
-                       CHECK (Status IN ('Pending', 'Approved', 'Rejected')),
-    LeaveType      NVARCHAR(50) NOT NULL DEFAULT 'Annual'
-                       CHECK (LeaveType IN ('Annual', 'Sick', 'Unpaid', 'Maternity')),
-    AdminComment   NVARCHAR(MAX),
-    CreatedDate    DATETIME NOT NULL DEFAULT GETDATE(),
-    FOREIGN KEY (EmployeeId) REFERENCES Employees(EmployeeId)
-);
-GO
-
--- ====================================================
--- VI. Product & Inventory Management
+-- IV. Product & Inventory Management
 -- ====================================================
 
 -- Bảng Categories
@@ -325,16 +228,38 @@ GO
 CREATE INDEX IX_OrderDetails_OrderId_ProductId ON OrderDetails(OrderId, ProductId);
 GO
 
--- Bảng OrderPromotions
-CREATE TABLE OrderPromotions (
-    OrderPromotionId INT IDENTITY(1,1) PRIMARY KEY,
-    OrderId          INT NOT NULL,
-    PromotionId      INT NOT NULL,
-    AppliedValue     DECIMAL(15, 2) NOT NULL, -- số tiền giảm thực tế
-    CreatedDate      DATETIME NOT NULL DEFAULT GETDATE(),
-    CONSTRAINT UQ_Order_Promotion UNIQUE (OrderId, PromotionId),
-    FOREIGN KEY (OrderId)     REFERENCES Orders(OrderId)         ON DELETE CASCADE,
-    FOREIGN KEY (PromotionId) REFERENCES Promotions(PromotionId)
+-- Bảng Carts
+CREATE TABLE Carts (
+    CartId      INT IDENTITY(1,1) PRIMARY KEY,
+    UserId      INT NOT NULL,
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    UpdatedDate DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_Carts_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE
+);
+GO
+
+-- Bảng CartItems
+CREATE TABLE CartItems (
+    CartItemId INT IDENTITY(1,1) PRIMARY KEY,
+    CartId     INT NOT NULL,
+    ProductId  INT NOT NULL,
+    Quantity   INT NOT NULL,
+    CONSTRAINT FK_CartItems_Carts FOREIGN KEY (CartId) REFERENCES Carts(CartId) ON DELETE CASCADE,
+    CONSTRAINT FK_CartItems_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
+);
+GO
+
+-- Bảng ProductReviews
+CREATE TABLE ProductReviews (
+    ReviewId           INT IDENTITY(1,1) PRIMARY KEY,
+    ProductId          INT NOT NULL,
+    UserId             INT NOT NULL,
+    Rating             INT NOT NULL CHECK(Rating >= 1 AND Rating <= 5),
+    Comment            NVARCHAR(1000) NULL,
+    CreatedDate        DATETIME NOT NULL DEFAULT GETDATE(),
+    IsVerifiedPurchase BIT NOT NULL DEFAULT 0,
+    CONSTRAINT FK_ProductReviews_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE,
+    CONSTRAINT FK_ProductReviews_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 GO
 
@@ -380,27 +305,12 @@ INSERT INTO Users (Username, PasswordHash, Email, FullName, Role, IsActive) VALU
 ('sale',  '123456', 'sale@salesmanager.com',  N'Sales Staff',          'Sales', 1);
 GO
 
--- 2. Shifts
-INSERT INTO Shifts (ShiftName, StartTime, EndTime) VALUES
-(N'Ca sáng', '08:00', '12:00'),
-(N'Ca chiều', '13:00', '17:00'),
-(N'Ca toàn thời gian', '08:00', '17:00');
+-- 2. Employees
+INSERT INTO Employees (UserId, Position, BasicSalary, HourlyWage, StartWorkingDate, Department, ContractType)
+VALUES (2, N'Nhân viên kinh doanh', 8000000, 50000, GETDATE(), N'Kinh doanh', 'Full-time');
 GO
 
--- 3. Employees
-INSERT INTO Employees (UserId, Position, BasicSalary, HourlyWage, StartWorkingDate, Department, ShiftId, ContractType)
-VALUES (2, N'Nhân viên kinh doanh', 8000000, 50000, GETDATE(), N'Kinh doanh', 3, 'Full-time');
-GO
-
--- 4. SalaryComponents
-INSERT INTO SalaryComponents (Name, Type, DefaultAmount, IsPercentage, Description) VALUES
-(N'Phụ cấp ăn trưa',    'Allowance', 500000, 0, N'Hỗ trợ bữa trưa hàng tháng'),
-(N'Phụ cấp đi lại',     'Allowance', 300000, 0, N'Hỗ trợ xăng xe, đi lại'),
-(N'Bảo hiểm xã hội',    'Deduction', 8,      1, N'8% lương cơ bản - BHXH nhân viên đóng'),
-(N'Thuế thu nhập cá nhân','Deduction',10,     1, N'Thuế TNCN ước tính');
-GO
-
--- 5. Categories
+-- 3. Categories
 INSERT INTO Categories (Name, Description) VALUES
 (N'Điện tử',              N'Điện thoại, máy tính, thiết bị điện tử'),
 (N'Thời trang',           N'Quần áo, giày dép nam nữ'),

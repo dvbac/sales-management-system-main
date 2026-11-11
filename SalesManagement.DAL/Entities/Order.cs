@@ -38,6 +38,4 @@ public partial class Order
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-
-    public virtual ICollection<OrderPromotion> OrderPromotions { get; set; } = new List<OrderPromotion>();
 }

@@ -35,20 +35,6 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payroll" ? "active" : "")" 
-                   asp-area="Admin" asp-controller="Payroll" asp-action="Index">
-                    <i class="bi bi-cash-stack"></i> Bảng lương
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "LeaveRequests" ? "active" : "")" 
-                   asp-area="Admin" asp-controller="LeaveRequests" asp-action="Index">
-                    <i class="bi bi-calendar2-check"></i> Đơn nghỉ phép
-                </a>
-            </li>
-
-            <li class="nav-item">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminProducts" ? "active" : "")" 
                    asp-area="Admin" asp-controller="AdminProducts" asp-action="Index">
                     <i class="bi bi-box-seam-fill"></i> Sản phẩm

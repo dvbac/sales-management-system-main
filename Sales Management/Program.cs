@@ -45,7 +45,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IPayrollService, PayrollService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
@@ -53,14 +52,11 @@ builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<ISettingService, SettingService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
 // Authentication & Session Configuration
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -237,18 +233,6 @@ using (var scope = app.Services.CreateScope())
                     CONSTRAINT FK_CartItems_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
                 );
             END
-            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Wishlists')
-            BEGIN
-                CREATE TABLE Wishlists (
-                    WishlistId INT PRIMARY KEY IDENTITY(1,1),
-                    UserId INT NOT NULL,
-                    ProductId INT NOT NULL,
-                    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
-                    CONSTRAINT FK_Wishlists_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE,
-                    CONSTRAINT FK_Wishlists_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE
-                );
-            END
-
             IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ProductReviews')
             BEGIN
                 CREATE TABLE ProductReviews (
@@ -261,21 +245,6 @@ using (var scope = app.Services.CreateScope())
                     IsVerifiedPurchase BIT NOT NULL DEFAULT 0,
                     CONSTRAINT FK_ProductReviews_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId) ON DELETE CASCADE,
                     CONSTRAINT FK_ProductReviews_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
-                );
-            END
-
-            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Notifications')
-            BEGIN
-                CREATE TABLE Notifications (
-                    NotificationId INT PRIMARY KEY IDENTITY(1,1),
-                    UserId INT NULL,
-                    Title NVARCHAR(200) NOT NULL,
-                    Message NVARCHAR(MAX) NOT NULL,
-                    IsRead BIT NOT NULL DEFAULT 0,
-                    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
-                    NotificationType NVARCHAR(50) NULL,
-                    ActionUrl NVARCHAR(255) NULL,
-                    CONSTRAINT FK_Notifications_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE
                 );
             END
         ");

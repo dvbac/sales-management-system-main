@@ -22,6 +22,4 @@ public partial class Promotion
     public decimal? MaxDiscountAmount { get; set; }
 
     public string? Status { get; set; }
-
-    public virtual ICollection<OrderPromotion> OrderPromotions { get; set; } = new List<OrderPromotion>();
 }

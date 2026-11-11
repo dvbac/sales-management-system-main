@@ -1,9 +1,8 @@
 @model SalesManagement.DAL.Entities.Product
 
-<!-- Nhúng Partial View này vào cuối trang Chi Tiết Sản Phẩm (Details.cshtml) -->
-<div class="product-reviews-section mt-5 pt-4 border-top">
+<div class="product-reviews-section mt-4 pt-3">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold m-0"><i class="fas fa-star text-warning me-2"></i>Đánh giá sản phẩm</h3>
+        <h4 class="fw-bold m-0"><i class="fas fa-star text-warning me-2"></i>Đánh giá sản phẩm</h4>
         <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" id="reviewCountBadge">0 đánh giá</span>
     </div>
 
@@ -17,18 +16,18 @@
                         <input type="hidden" id="reviewProductId" value="@Model.ProductId" />
                         
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">CHẤT LƯỢNG SẢN PHẨM</label>
-                            <div class="rating-stars mb-2" dir="rtl">
+                            <label class="form-label text-muted small fw-bold d-block">CHẤT LƯỢNG SẢN PHẨM</label>
+                            <div class="rating-stars mb-2">
                                 <input type="radio" id="star5" name="rating" value="5" checked />
-                                <label for="star5" title="Tuyệt vời - 5 sao">5 stars</label>
+                                <label for="star5" title="Tuyệt vời - 5 sao"></label>
                                 <input type="radio" id="star4" name="rating" value="4" />
-                                <label for="star4" title="Tốt - 4 sao">4 stars</label>
+                                <label for="star4" title="Tốt - 4 sao"></label>
                                 <input type="radio" id="star3" name="rating" value="3" />
-                                <label for="star3" title="Bình thường - 3 sao">3 stars</label>
+                                <label for="star3" title="Bình thường - 3 sao"></label>
                                 <input type="radio" id="star2" name="rating" value="2" />
-                                <label for="star2" title="Tệ - 2 sao">2 stars</label>
+                                <label for="star2" title="Tệ - 2 sao"></label>
                                 <input type="radio" id="star1" name="rating" value="1" />
-                                <label for="star1" title="Rất tệ - 1 sao">1 star</label>
+                                <label for="star1" title="Rất tệ - 1 sao"></label>
                             </div>
                         </div>
 
@@ -48,7 +47,6 @@
         <!-- Phần Hiển Thị Lịch Sử Đánh Giá -->
         <div class="col-lg-8">
             <div id="reviewsList" class="reviews-list-container pe-2">
-                <!-- Data loaded via Ajax -->
                 <div class="text-center py-5 text-muted">
                     <div class="spinner-border text-primary mb-3" role="status"></div>
                     <p>Đang tải đánh giá...</p>
@@ -59,7 +57,6 @@
 </div>
 
 <style>
-    /* Custom Star Rating using pure CSS */
     .rating-stars {
         display: inline-flex;
         flex-direction: row-reverse;
@@ -70,13 +67,14 @@
     }
     .rating-stars label {
         color: #ddd;
-        font-size: 28px;
-        padding: 0 2px;
+        font-size: 32px;
+        line-height: 1;
+        padding: 0 4px;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }
     .rating-stars label::before {
-        content: '\2605'; /* Star icon HTML entity */
+        content: '\2605';
     }
     .rating-stars input:checked ~ label,
     .rating-stars label:hover,
@@ -105,53 +103,54 @@
         max-height: 600px;
         overflow-y: auto;
     }
-    /* Custom Scrollbar */
-    .reviews-list-container::-webkit-scrollbar {
-        width: 6px;
-    }
-    .reviews-list-container::-webkit-scrollbar-track {
-        background: #f1f1f1; 
-        border-radius: 10px;
-    }
-    .reviews-list-container::-webkit-scrollbar-thumb {
-        background: #ccc; 
-        border-radius: 10px;
-    }
-    .reviews-list-container::-webkit-scrollbar-thumb:hover {
-        background: #888; 
-    }
 </style>
 
 <script>
-    $(document).ready(function() {
-        // Load Reviews initially
+    document.addEventListener("DOMContentLoaded", function() {
         loadReviews();
 
-        // Handle Form Submission
-        $('#reviewForm').submit(function(e) {
-            e.preventDefault();
-            
-            const productId = $('#reviewProductId').val();
-            const rating = $('input[name="rating"]:checked').val();
-            const comment = $('#reviewComment').val();
-            const btn = $(this).find('button[type="submit"]');
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const productId = document.getElementById('reviewProductId').value;
+                const ratingInput = document.querySelector('input[name="rating"]:checked');
+                const rating = ratingInput ? ratingInput.value : 5;
+                const commentEl = document.getElementById('reviewComment');
+                const comment = commentEl.value.trim();
+                const btn = reviewForm.querySelector('button[type="submit"]');
 
-            if (!rating) {
-                Swal.fire('Lỗi', 'Vui lòng chọn số sao đánh giá.', 'warning');
-                return;
-            }
+                if (!comment) {
+                    Swal.fire('Lỗi', 'Vui lòng nhập nhận xét của bạn.', 'warning');
+                    return;
+                }
 
-            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang gửi...');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
 
-            $.ajax({
-                url: '/ProductReviews/AddReview',
-                type: 'POST',
-                data: {
-                    productId: productId,
-                    rating: rating,
-                    comment: comment
-                },
-                success: function(res) {
+                const formData = new URLSearchParams();
+                formData.append('productId', productId);
+                formData.append('rating', rating);
+                formData.append('comment', comment);
+
+                fetch('/ProductReviews/AddReview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData.toString()
+                })
+                .then(function(response) {
+                    if (response.status === 401 || response.redirected) {
+                        window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(function(res) {
+                    if (!res) return;
                     if (res.success) {
                         Swal.fire({
                             icon: 'success',
@@ -160,67 +159,70 @@
                             timer: 2000,
                             showConfirmButton: false
                         });
-                        $('#reviewComment').val('');
-                        loadReviews(); // Reload data
+                        commentEl.value = '';
+                        loadReviews();
                     } else {
                         if (res.message === "Vui lòng đăng nhập") {
-                            window.location.href = '/Account/Login?ReturnUrl=' + window.location.pathname;
+                            window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
                         } else {
-                            Swal.fire('Thông báo', res.message, 'error');
+                            Swal.fire('Thông báo', res.message || 'Không thể gửi đánh giá.', 'error');
                         }
                     }
-                },
-                error: function() {
-                    Swal.fire('Lỗi hệ thống', 'Vui lòng thử lại sau', 'error');
-                },
-                complete: function() {
-                    btn.prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i> Gửi đánh giá');
-                }
+                })
+                .catch(function() {
+                    Swal.fire('Lỗi hệ thống', 'Vui lòng đăng nhập hoặc thử lại sau.', 'error');
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Gửi đánh giá';
+                });
             });
-        });
+        }
     });
 
     function loadReviews() {
-        const productId = $('#reviewProductId').val();
+        const productIdEl = document.getElementById('reviewProductId');
+        if (!productIdEl) return;
+        const productId = productIdEl.value;
         
-        $.ajax({
-            url: '/ProductReviews/GetReviews',
-            type: 'GET',
-            data: { productId: productId },
-            success: function(res) {
-                if (res.success && res.data) {
-                    let html = '';
-                    $('#reviewCountBadge').text(res.data.length + ' đánh giá');
+        fetch('/ProductReviews/GetReviews?productId=' + encodeURIComponent(productId))
+            .then(function(res) { return res.json(); })
+            .then(function(res) {
+                const listEl = document.getElementById('reviewsList');
+                const badgeEl = document.getElementById('reviewCountBadge');
+                if (!listEl) return;
+
+                if (res.success && Array.isArray(res.data)) {
+                    if (badgeEl) badgeEl.textContent = res.data.length + ' đánh giá';
                     
                     if (res.data.length === 0) {
-                        html = `<div class="text-center py-5 bg-white rounded-4 border">
-                                    <i class="far fa-comment-dots fa-3x text-light mb-3"></i>
+                        listEl.innerHTML = `<div class="text-center py-5 bg-white rounded-4 border">
+                                    <i class="far fa-comment-dots fa-3x text-secondary opacity-50 mb-3"></i>
                                     <p class="text-muted mb-0">Chưa có đánh giá nào cho sản phẩm này.<br>Hãy là người đầu tiên đánh giá!</p>
                                 </div>`;
                     } else {
+                        let html = '';
                         res.data.forEach(function(item) {
-                            // Generate Stars
                             let starsHtml = '';
                             for (let i = 1; i <= 5; i++) {
                                 starsHtml += i <= item.rating ? '<i class="fas fa-star text-warning small"></i>' : '<i class="far fa-star text-muted small"></i>';
                             }
                             
-                            // Date format
-                            const dateObj = new Date(item.createdDate);
+                            const dateObj = item.createdDate ? new Date(item.createdDate) : new Date();
                             const formattedDate = dateObj.toLocaleDateString("vi-VN") + ' ' + dateObj.toLocaleTimeString("vi-VN", {hour: '2-digit', minute:'2-digit'});
 
                             const verifiedTag = item.isVerifiedPurchase ? 
                                 `<span class="verified-badge ms-2"><i class="fas fa-check-circle me-1"></i>Đã mua hàng</span>` : '';
 
-                            const userAvatar = item.avatar ? item.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.fullName || 'User') + '&background=random';
+                            const userAvatar = item.avatar ? item.avatar : '/img/default-avatar.png';
 
                             html += `
                             <div class="review-item bg-white p-4 mb-3 rounded-4 border shadow-sm">
                                 <div class="d-flex align-items-start">
-                                    <img src="${userAvatar}" class="rounded-circle me-3 border" style="width: 48px; height: 48px; object-fit:cover;">
+                                    <img src="${userAvatar}" onerror="this.onerror=null;this.src='/img/default-avatar.png';" class="rounded-circle me-3 border" style="width: 48px; height: 48px; object-fit:cover;">
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <h6 class="fw-bold mb-0">${item.fullName || 'Người dùng ẩn danh'} ${verifiedTag}</h6>
+                                            <h6 class="fw-bold mb-0">${item.fullName || 'Khách hàng'} ${verifiedTag}</h6>
                                             <small class="text-muted"><i class="far fa-clock me-1"></i>${formattedDate}</small>
                                         </div>
                                         <div class="mb-2">${starsHtml}</div>
@@ -229,10 +231,15 @@
                                 </div>
                             </div>`;
                         });
+                        listEl.innerHTML = html;
                     }
-                    $('#reviewsList').html(html);
                 }
-            }
-        });
+            })
+            .catch(function() {
+                const listEl = document.getElementById('reviewsList');
+                if (listEl) {
+                    listEl.innerHTML = '<div class="text-center py-4 text-muted">Không thể tải đánh giá.</div>';
+                }
+            });
     }
 </script>

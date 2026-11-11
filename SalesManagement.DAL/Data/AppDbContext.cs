@@ -38,8 +38,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
 
-    public virtual DbSet<OrderPromotion> OrderPromotions { get; set; }
-
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
@@ -48,28 +46,12 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<TimeAttendance> TimeAttendances { get; set; }
-
-    public virtual DbSet<Payroll> Payrolls { get; set; }
-
     public virtual DbSet<SystemSetting> SystemSettings { get; set; }
-
-
-
-    public virtual DbSet<Shift> Shifts { get; set; }
-
-    public virtual DbSet<LeaveRequest> LeaveRequests { get; set; }
-
-    public virtual DbSet<SalaryComponent> SalaryComponents { get; set; }
-
-    public virtual DbSet<EmployeeSalaryComponent> EmployeeSalaryComponents { get; set; }
 
     public virtual DbSet<Cart> Carts { get; set; }
     public virtual DbSet<CartItem> CartItems { get; set; }
 
-    public virtual DbSet<Wishlist> Wishlists { get; set; }
     public virtual DbSet<ProductReview> ProductReviews { get; set; }
-    public virtual DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -129,10 +111,6 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.User).WithOne(p => p.Employee)
                 .HasForeignKey<Employee>(d => d.UserId)
                 .HasConstraintName("FK__Employees__UserI__4316F928");
-
-            entity.HasOne(d => d.Shift).WithMany(p => p.Employees)
-                .HasForeignKey(d => d.ShiftId)
-                .HasConstraintName("FK_Employees_Shifts");
         });
 
         modelBuilder.Entity<InventoryTransaction>(entity =>
@@ -238,27 +216,6 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK__OrderDeta__Produ__0F624AF8");
         });
 
-        modelBuilder.Entity<OrderPromotion>(entity =>
-        {
-            entity.HasKey(e => e.OrderPromotionId).HasName("PK__OrderPro__CE84A101BF8FF200");
-
-            entity.HasIndex(e => new { e.OrderId, e.PromotionId }, "UQ_Order_Promotion").IsUnique();
-
-            entity.Property(e => e.AppliedValue).HasColumnType("decimal(15, 2)");
-            entity.Property(e => e.CreatedDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderPromotions)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__OrderProm__Order__14270015");
-
-            entity.HasOne(d => d.Promotion).WithMany(p => p.OrderPromotions)
-                .HasForeignKey(d => d.PromotionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderProm__Promo__151B244E");
-        });
-
         modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD13EA28AD");
@@ -362,55 +319,6 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<TimeAttendance>(entity =>
-        {
-            entity.HasKey(e => e.AttendanceId);
-            entity.HasOne(d => d.Employee).WithMany(p => p.TimeAttendances)
-                .HasForeignKey(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-            entity.Property(e => e.Date).HasColumnType("date");
-
-            entity.HasOne(d => d.Shift).WithMany(p => p.TimeAttendances)
-                .HasForeignKey(d => d.ShiftId)
-                .HasConstraintName("FK_TimeAttendances_Shifts");
-            entity.Property(e => e.DeductionAmount).HasColumnType("decimal(18, 2)");
-        });
-
-        modelBuilder.Entity<Shift>(entity =>
-        {
-            entity.HasKey(e => e.ShiftId);
-            entity.Property(e => e.ShiftName).HasMaxLength(50);
-            entity.Property(e => e.StartTime).HasColumnType("time");
-            entity.Property(e => e.EndTime).HasColumnType("time");
-        });
-
-        modelBuilder.Entity<Payroll>(entity =>
-        {
-            entity.HasKey(e => e.PayrollId);
-            entity.HasOne(d => d.Employee).WithMany(p => p.Payrolls)
-                .HasForeignKey(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-            entity.Property(e => e.BaseSalary).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Benefits).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Bonus).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Penalty).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TotalAllowances).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TotalDeductions).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.NetSalary).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TotalSalary).HasColumnType("decimal(18, 2)");
-        });
-
-        modelBuilder.Entity<SalaryComponent>(entity =>
-        {
-            entity.Property(e => e.DefaultAmount).HasColumnType("decimal(18, 2)");
-        });
-
-        modelBuilder.Entity<EmployeeSalaryComponent>(entity =>
-        {
-            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
         });
 
         modelBuilder.Entity<Cart>(entity =>

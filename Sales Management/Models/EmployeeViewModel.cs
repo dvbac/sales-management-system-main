@@ -45,17 +45,5 @@ namespace SalesManagement.Web.Models
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu")]
         public string? Password { get; set; }
-
-        public List<TimeAttendanceViewModel> TimeAttendances { get; set; } = new();
-    }
-
-    public class TimeAttendanceViewModel
-    {
-        public int AttendanceId { get; set; }
-        public DateOnly Date { get; set; }
-        public DateTime? CheckInTime { get; set; }
-        public DateTime? CheckOutTime { get; set; }
-        public string? Status { get; set; }
-        public double WorkHours { get; set; }
     }
 }

@@ -32,16 +32,7 @@ namespace SalesManagement.Web.Controllers
                 ContractType = e.ContractType,
                 IsDeleted = e.IsDeleted,
                 Username = e.User?.Username,
-                Role = e.User?.Role,
-                TimeAttendances = e.TimeAttendances?.Select(t => new TimeAttendanceViewModel
-                {
-                    AttendanceId = t.AttendanceId,
-                    Date = t.Date,
-                    CheckInTime = t.CheckInTime,
-                    CheckOutTime = t.CheckOutTime,
-                    Status = t.Status,
-                    WorkHours = t.WorkHours
-                }).ToList() ?? new List<TimeAttendanceViewModel>()
+                Role = e.User?.Role
             };
         }
 
