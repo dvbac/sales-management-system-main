@@ -43,7 +43,8 @@
                     <td>
                         <input type="checkbox"
                                value="@products[i].ProductId"
-                               name="productIds" />
+                               name="productIds"
+                               onchange="document.getElementById('qty_@i').disabled = !this.checked;" />
                     </td>
 
                     <td>
@@ -51,16 +52,18 @@
                     </td>
 
                     <td class="text-danger fw-bold">
-                        @products[i].SellingPrice.ToString("N0") ?
+                        @products[i].SellingPrice.ToString("N0") ₫
                     </td>
 
                     <td>
                         <input type="number"
+                               id="qty_@i"
                                name="quantities"
                                class="form-control"
                                min="1"
                                max="@products[i].StockQuantity"
-                               value="1" />
+                               value="1"
+                               disabled />
                     </td>
 
                     <td>

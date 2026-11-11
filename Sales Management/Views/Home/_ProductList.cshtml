@@ -11,7 +11,7 @@
                         @if (!string.IsNullOrEmpty(item.PrimaryImageUrl))
                         {
                              <a asp-action="Details" asp-route-id="@item.ProductId" class="d-block">
-                                 <img src="@item.PrimaryImageUrl" class="card-img-top product-img" alt="@item.Name">
+                                 <img src="@item.PrimaryImageUrl" class="card-img-top product-img" alt="@item.Name" onerror="this.onerror=null;this.src='/images/no-image.png';">
                              </a>
                         }
                         else

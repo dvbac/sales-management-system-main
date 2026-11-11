@@ -145,12 +145,6 @@ namespace SalesManagement.Web.Controllers
             // Merge Session Cart
             await MergeSessionCart(user.UserId);
 
-            // Check-in cho Sales
-            if (user.Role == "Sales")
-            {
-                await _authService.CheckInSalesEmployee(user.UserId);
-            }
-
             // Redirect theo role
             if (user.Role == "Admin")
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
@@ -193,21 +187,18 @@ namespace SalesManagement.Web.Controllers
             return RedirectToAction(nameof(Login));
         }
 
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         // POST: /Account/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Logout(string? reason = null)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (int.TryParse(userIdStr, out int userId))
-            {
-                 if (User.IsInRole("Sales"))
-                 {
-                     await _authService.CheckOutSalesEmployee(userId, reason ?? "User Logged Out");
-                 }
-            }
-            
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }

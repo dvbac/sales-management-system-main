@@ -481,11 +481,23 @@ INSERT INTO ProductImages (ProductId, ImageUrl, IsPrimary) VALUES
 (3, 'https://salt.tikicdn.com/ts/tmp/61/67/b5/ae638ebf36f789c2e1d5ec30bc60340c.jpeg', 0),
 (3, 'https://aoxuanhe.com/upload/product/axh-098/ao-thun-nam-polo-den-tron-cotton.jpg', 0),
 
-(4, 'https://vn.sharp/sites/default/files/styles/resize_320x320/public/2025-11/KS-IH10IX-WH.jpg?itok=1omiyvKU', 1),
-(4, 'https://vn.sharp/sites/default/files/styles/resize_320x320/public/2025-10/KS-PR20ETV-WH.jpg?itok=AXmD4skz', 0),
-(4, 'https://vn.sharp/sites/default/files/styles/resize_320x320/public/2025-10/KS-PR19ETV-GR.jpg?itok=SCmfDtGc', 0),
-(4, 'https://vn.sharp/sites/default/files/styles/resize_320x320/public/2025-08/WEB-KS-COM1893CIB-BK%20-Rear%20left_1.jpg?itok=fk1BYgld', 0),
-(4, 'https://vn.sharp/sites/default/files/styles/resize_320x320/public/2025-08/KS-TH18E2O-RS%20%2810%29_1.jpg?itok=AOYaPScf', 0);
+(4, '/images/d388a63d-c5bc-466f-83f5-49d47abac6dd.jpg', 1),
+(5, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', 1),
+(6, '/images/eae45629-936b-429b-9d2b-93823d6abca7.jpg', 1),
+(7, 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&q=80', 1),
+(8, '/images/792be640-a102-46d8-96a8-2e71cac3f333.jpg', 1),
+(9, 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=500&q=80', 1),
+(10, 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=500&q=80', 1),
+(11, '/images/c95b0b84-afec-4c95-a8a3-bc82e12c5857.jpg', 1),
+(12, 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80', 1),
+(13, 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80', 1),
+(14, 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=500&q=80', 1),
+(15, 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80', 1),
+(16, 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=500&q=80', 1),
+(17, 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500&q=80', 1),
+(18, 'https://images.unsplash.com/photo-1565026057447-bc90a3dceb87?w=500&q=80', 1),
+(19, 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80', 1),
+(20, 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=500&q=80', 1);
 GO
 
 -- 8. InventoryTransactions

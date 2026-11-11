@@ -20,7 +20,7 @@ public partial class AppDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=NHOTUNG\\SQLEXPRESS;Database=SalesManagement;User Id=sa;Password=123;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=SalesManagement;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
         }
     }
 

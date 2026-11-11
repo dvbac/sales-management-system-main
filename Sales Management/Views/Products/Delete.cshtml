@@ -26,6 +26,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="ProductId" />
+        <input type="hidden" name="id" value="@Model.ProductId" />
         <input type="submit" value="Xóa" class="btn btn-danger" /> |
         <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
     </form>

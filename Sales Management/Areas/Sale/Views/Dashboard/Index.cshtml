@@ -194,9 +194,9 @@
                     {
                         <div class="top-product-item d-flex align-items-center mb-2">
                            <div class="product-img-wrapper me-3">
-                                @if (item.Product?.ProductImages != null && item.Product.ProductImages.Count > 0)
+                                @if (item.Product?.ProductImages != null && item.Product.ProductImages.Any())
                                 {
-                                    <img src="@item.Product.ProductImages[0].ImageUrl" class="img-fluid rounded" alt="" style="object-fit: cover; width: 100%; height: 100%;">
+                                    <img src="@item.Product.ProductImages.FirstOrDefault()?.ImageUrl" class="img-fluid rounded" alt="" style="object-fit: cover; width: 100%; height: 100%;">
                                 }
                                 else
                                 {

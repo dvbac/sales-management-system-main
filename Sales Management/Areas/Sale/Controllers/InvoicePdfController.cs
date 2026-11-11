@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using iText.Kernel.Pdf;
@@ -9,6 +10,7 @@ using SalesManagement.DAL.Data;
 namespace SalesManagement.Web.Areas.Sale.Controllers
 {
     [Area("Sale")]
+    [Authorize]
     public class InvoicePdfController : Controller
     {
         private readonly AppDbContext _context;

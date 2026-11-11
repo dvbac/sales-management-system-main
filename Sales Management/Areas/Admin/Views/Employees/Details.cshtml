@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4">
     <div>
         <h3 class="fw-bold text-dark">Hồ sơ nhân viên</h3>
-        <p class="text-muted mb-0">Xem chi tiết thông tin và lịch sử làm việc</p>
+        <p class="text-muted mb-0">Xem chi tiết thông tin và hồ sơ nhân sự</p>
     </div>
     <div class="d-flex gap-2">
         <a asp-action="Edit" asp-route-id="@Model.EmployeeId" class="btn btn-primary rounded-pill px-4">
@@ -20,7 +20,7 @@
 
 <div class="row g-4">
     <!-- Profile Sidebar -->
-    <div class="col-lg-4">
+    <div class="col-lg-5">
          <div class="card-modern text-center h-100 position-relative overflow-hidden">
             <div class="bg-gradient-primary position-absolute top-0 start-0 w-100" style="height: 100px; background: linear-gradient(135deg, #4361ee, #7367f0);"></div>
             <div class="position-relative pt-5">
@@ -32,13 +32,9 @@
             </div>
             
             <div class="row text-center border-top border-bottom py-3 my-3">
-                <div class="col-6 border-end">
-                    <h5 class="fw-bold mb-0">@Model.TimeAttendances.Count()</h5>
-                    <small class="text-muted text-uppercase">Ngày làm</small>
-                </div>
-                <div class="col-6">
-                    <h5 class="fw-bold mb-0">@(Model.BasicSalary.HasValue ? Model.BasicSalary.Value.ToString("N0") : "-")</h5>
-                    <small class="text-muted text-uppercase">Lương (cents)</small>
+                <div class="col-12">
+                    <h5 class="fw-bold mb-0 text-primary">@(Model.BasicSalary.HasValue ? Model.BasicSalary.Value.ToString("N0") : "-") VNĐ</h5>
+                    <small class="text-muted text-uppercase">Lương cơ bản</small>
                 </div>
             </div>
 
@@ -75,66 +71,42 @@
         </div>
     </div>
 
-    <!-- Attendance History -->
-    <div class="col-lg-8">
+    <!-- Employment Details -->
+    <div class="col-lg-7">
         <div class="card-modern h-100">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0 text-dark fw-bold">Lịch sử điểm danh</h5>
-                <button class="btn btn-sm btn-light rounded-pill border"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
+            <h5 class="mb-4 text-dark fw-bold">Thông tin hợp đồng & vị trí</h5>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Mã nhân viên</small>
+                        <span class="fw-bold text-dark fs-5">NV-@Model.EmployeeId.ToString("D4")</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Tài khoản đăng nhập</small>
+                        <span class="fw-bold text-dark fs-5">@Model.User?.Username</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Chức vụ</small>
+                        <span class="fw-bold text-dark">@(string.IsNullOrEmpty(Model.Position) ? "Nhân viên" : Model.Position)</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Phòng ban</small>
+                        <span class="fw-bold text-dark">@(string.IsNullOrEmpty(Model.Department) ? "Kinh doanh" : Model.Department)</span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Ca làm việc phụ trách</small>
+                        <span class="fw-bold text-dark">Ca hành chính (08:00 - 17:00)</span>
+                    </div>
+                </div>
             </div>
-            
-             @if (Model.TimeAttendances != null && Model.TimeAttendances.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table-modern">
-                        <thead>
-                            <tr>
-                                <th>Ngày</th>
-                                <th class="text-center">Vào</th>
-                                <th class="text-center">Ra</th>
-                                <th class="text-center">Số giờ</th>
-                                <th class="text-center">Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var attn in Model.TimeAttendances.OrderByDescending(t => t.Date).Take(10))
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="fw-bold">@attn.Date.ToString("dd/MM/yyyy")</div>
-                                        <small class="text-muted">@attn.Date.DayOfWeek</small>
-                                    </td>
-                                    <td class="text-center font-monospace">@(attn.CheckInTime.HasValue ? attn.CheckInTime.Value.ToString("HH:mm") : "--:--")</td>
-                                    <td class="text-center font-monospace">@(attn.CheckOutTime.HasValue ? attn.CheckOutTime.Value.ToString("HH:mm") : "--:--")</td>
-                                     <td class="text-center">
-                                        @if(attn.CheckInTime.HasValue && attn.CheckOutTime.HasValue)
-                                        {
-                                            var duration = attn.CheckOutTime.Value - attn.CheckInTime.Value;
-                                            <span class="fw-bold text-dark">@duration.ToString(@"hh\:mm")</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        @if (!attn.CheckInTime.HasValue) { <span class="badge-modern badge-danger-modern">Vắng mặt</span> }
-                                        else if (!attn.CheckOutTime.HasValue) { <span class="badge-modern badge-warning-modern">Đang làm việc</span> }
-                                        else { <span class="badge-modern badge-success-modern">Hoàn thành</span> }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                 <div class="text-center py-5">
-                    <div class="mb-3 text-light-secondary opacity-50"><i class="bi bi-clock-history fs-1"></i></div>
-                    <p class="text-muted">Chưa có dữ liệu điểm danh nào.</p>
-                </div>
-            }
         </div>
     </div>
 </div>

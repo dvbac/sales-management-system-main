@@ -50,7 +50,7 @@ namespace SalesManagement.Web.Controllers
             return View(orders);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Index(string searchString, string statusFilter)
         {
             var orders = await _orderService.GetOrdersOverviewAsync(searchString, statusFilter);
@@ -59,7 +59,7 @@ namespace SalesManagement.Web.Controllers
             return View(orders);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -72,7 +72,7 @@ namespace SalesManagement.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> UpdateStatus(int id, string status)
         {
             var success = await _orderService.UpdateOrderStatusAsync(id, status);
@@ -84,7 +84,7 @@ namespace SalesManagement.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Refund(int id)
         {
             var success = await _orderService.RefundOrderAsync(id);

@@ -106,7 +106,7 @@ namespace SalesManagement.BLL.Services
                         ProductId = product.ProductId,
                         Quantity = -quantities[i],
                         CreatedDate = DateTime.Now,
-                        Type = "Sale",
+                        Type = "Export_Order",
                         CreatedBy = 1
                     });
                 }
@@ -208,7 +208,7 @@ namespace SalesManagement.BLL.Services
                         ProductId = item.product.ProductId,
                         Quantity = -item.quantity,
                         CreatedDate = DateTime.Now,
-                        Type = "Sale",
+                        Type = "Export_Order",
                         CreatedBy = userId
                     });
                 }

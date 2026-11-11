@@ -43,8 +43,8 @@ namespace SalesManagement.BLL.Services
                 .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.ProductImages)
-                // Filter out deleted products, handling potential NULL status in database
-                .Where(p => p.Status == null || p.Status != "Deleted");
+                // Filter out inactive/deleted products
+                .Where(p => p.Status == null || (p.Status != "Inactive" && p.Status != "Deleted"));
 
             if (categoryId.HasValue && categoryId.Value > 0)
             {
@@ -79,7 +79,7 @@ namespace SalesManagement.BLL.Services
         public async Task<int> GetTotalProductCountAsync(string searchString, int? categoryId = null)
         {
             var query = _productRepository.GetQueryable()
-                .Where(p => p.Status == null || p.Status != "Deleted");
+                .Where(p => p.Status == null || (p.Status != "Inactive" && p.Status != "Deleted"));
 
             if (categoryId.HasValue && categoryId.Value > 0)
             {
@@ -142,7 +142,7 @@ namespace SalesManagement.BLL.Services
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null) return false;
 
-            product.Status = "Deleted";
+            product.Status = "Inactive";
             product.UpdatedDate = DateTime.Now;
             
             _productRepository.Update(product);

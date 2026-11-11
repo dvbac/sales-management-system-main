@@ -35,6 +35,7 @@
 
             <form asp-action="Delete">
                 <input type="hidden" asp-for="EmployeeId" />
+                <input type="hidden" name="id" value="@Model.EmployeeId" />
                 <div class="d-flex gap-3 justify-content-center">
                     <a asp-action="Index" class="btn btn-light rounded-pill px-4 flex-grow-1">Hủy bỏ</a>
                     <button type="submit" class="btn btn-danger rounded-pill px-4 flex-grow-1">Xác nhận xóa</button>

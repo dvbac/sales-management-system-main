@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 </head>
 <body>
@@ -30,6 +31,20 @@
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Employees" ? "active" : "")" 
                    asp-area="Admin" asp-controller="Employees" asp-action="Index">
                     <i class="bi bi-people-fill"></i> Nhân viên
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Payroll" ? "active" : "")" 
+                   asp-area="Admin" asp-controller="Payroll" asp-action="Index">
+                    <i class="bi bi-cash-stack"></i> Bảng lương
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "LeaveRequests" ? "active" : "")" 
+                   asp-area="Admin" asp-controller="LeaveRequests" asp-action="Index">
+                    <i class="bi bi-calendar2-check"></i> Đơn nghỉ phép
                 </a>
             </li>
 
@@ -76,10 +91,16 @@
             </li>
         </ul>
 
-        <div class="sidebar-footer">
-            <a asp-all-route-data="@(new Dictionary<string, string> { { "area", "" } })" asp-controller="Home" asp-action="Index" class="nav-link text-danger">
-                <i class="bi bi-box-arrow-left"></i> Về trang chủ 
+        <div class="sidebar-footer d-flex flex-column gap-2">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link text-primary">
+                <i class="bi bi-shop"></i> Về cửa hàng 
             </a>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="nav-link text-danger border-0 bg-transparent w-100 text-start ps-0">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                </button>
+            </form>
         </div>
     </nav>
 
@@ -106,7 +127,21 @@
         </div>
 
         <!-- Render Body -->
-        <div class="container-fluid p-0">
+        <div class="container-fluid p-3">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
              @RenderBody()
         </div>
     </div>

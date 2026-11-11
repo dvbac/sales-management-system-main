@@ -89,42 +89,6 @@ namespace SalesManagement.BLL.Services
             return user;
         }
 
-        public async Task CheckInSalesEmployee(int userId)
-        {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.UserId == userId);
-            if (employee == null) return;
-
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var attendance = await _context.TimeAttendances.FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.Date == today);
-
-            if (attendance == null)
-            {
-                _context.TimeAttendances.Add(new TimeAttendance
-                {
-                    EmployeeId = employee.EmployeeId,
-                    Date = today,
-                    CheckInTime = DateTime.Now,
-                    Status = "Present"
-                });
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task CheckOutSalesEmployee(int userId, string reason)
-        {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.UserId == userId);
-            if (employee == null) return;
-
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var attendance = await _context.TimeAttendances.FirstOrDefaultAsync(a => a.EmployeeId == employee.EmployeeId && a.Date == today);
-
-            if (attendance != null && attendance.CheckOutTime == null)
-            {
-                attendance.CheckOutTime = DateTime.Now;
-                await _context.SaveChangesAsync();
-            }
-        }
-
         public async Task<User?> GetUserProfileAsync(int userId)
         {
             return await _context.Users

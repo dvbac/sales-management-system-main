@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Từ chối truy cập (403)";
+}
+
+<div class="container py-5 text-center my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="mb-4">
+                    <span class="badge bg-danger bg-opacity-10 text-danger p-3 rounded-circle">
+                        <i class="bi bi-shield-x fs-1"></i>
+                    </span>
+                </div>
+                <h2 class="fw-bold text-danger mb-2">403 - Quyền truy cập bị từ chối</h2>
+                <p class="text-muted mb-4">
+                    Tài khoản của bạn không có đủ quyền hạn để truy cập vào phân hệ này.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="/" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-house-door me-2"></i> Về trang chủ
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập tài khoản khác
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

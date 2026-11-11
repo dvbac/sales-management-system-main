@@ -50,72 +50,29 @@
 
         <!-- Work History -->
         <div class="col-md-7">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Lịch sử làm việc (Điểm danh)</h5>
-                    <button class="btn btn-sm btn-light text-primary">Xuất báo cáo</button>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Thông tin nhân sự</h5>
                 </div>
                 <div class="card-body">
-                    @if (Model.TimeAttendances != null && Model.TimeAttendances.Any())
-                    {
-                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                            <table class="table table-sm table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Ngày</th>
-                                        <th>Giờ vào</th>
-                                        <th>Giờ ra</th>
-                                        <th>Số giờ</th>
-                                        <th>Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var attn in Model.TimeAttendances.OrderByDescending(t => t.Date))
-                                    {
-                                        <tr>
-                                            <td>@attn.Date.ToString("dd/MM/yyyy")</td>
-                                            <td>@(attn.CheckInTime.HasValue ? attn.CheckInTime.Value.ToString("HH:mm") : "-")</td>
-                                            <td>@(attn.CheckOutTime.HasValue ? attn.CheckOutTime.Value.ToString("HH:mm") : "-")</td>
-                                            <td>
-                                                @if(attn.CheckInTime.HasValue && attn.CheckOutTime.HasValue)
-                                                {
-                                                    var duration = attn.CheckOutTime.Value - attn.CheckInTime.Value;
-                                                    @duration.ToString(@"hh\:mm")
-                                                }
-                                                else
-                                                {
-                                                    <span>-</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (!attn.CheckInTime.HasValue) { <span class="badge bg-danger">Vắng mặt</span> }
-                                                else if (!attn.CheckOutTime.HasValue) { <span class="badge bg-warning text-dark">Đang làm việc</span> }
-                                                else { <span class="badge bg-success">Hoàn thành</span> }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Mã nhân viên</small>
+                            <span class="fw-bold">NV-@Model.EmployeeId.ToString("D4")</span>
                         </div>
-                        
-                        <!-- Summary -->
-                        <div class="mt-3 border-top pt-2">
-                             <strong>Tổng số ca:</strong> @Model.TimeAttendances.Count <br/>
-                             @{
-                                 double totalHours = 0;
-                                 foreach(var t in Model.TimeAttendances.Where(x => x.CheckInTime.HasValue && x.CheckOutTime.HasValue))
-                                 {
-                                     if(t.CheckInTime != null && t.CheckOutTime != null)
-                                        totalHours += (t.CheckOutTime.Value - t.CheckInTime.Value).TotalHours;
-                                 }
-                             }
-                             <strong>Tổng số giờ làm việc:</strong> @totalHours.ToString("F2")
+                        <div class="col-6">
+                            <small class="text-muted d-block">Tài khoản</small>
+                            <span class="fw-bold">@Model.Username</span>
                         </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">Không tìm thấy hồ sơ điểm danh.</p>
-                    }
+                        <div class="col-6">
+                            <small class="text-muted d-block">Phòng ban</small>
+                            <span class="fw-bold">@(string.IsNullOrEmpty(Model.Department) ? "Kinh doanh" : Model.Department)</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Chức vụ</small>
+                            <span class="fw-bold">@(string.IsNullOrEmpty(Model.Position) ? "Nhân viên" : Model.Position)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

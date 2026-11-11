@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesManagement.BLL.Interfaces;
 using SalesManagement.DAL.Entities;
@@ -75,6 +76,7 @@ namespace SalesManagement.Web.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin,Sales")]
         public IActionResult Create()
         {
             return View(new ProductViewModel());
@@ -83,6 +85,7 @@ namespace SalesManagement.Web.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Create(ProductViewModel model)
         {
             if (ModelState.IsValid)
@@ -108,6 +111,7 @@ namespace SalesManagement.Web.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -133,6 +137,7 @@ namespace SalesManagement.Web.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Edit(int id, ProductViewModel model)
         {
             if (id != model.ProductId) return NotFound();
@@ -161,6 +166,7 @@ namespace SalesManagement.Web.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -184,6 +190,7 @@ namespace SalesManagement.Web.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Sales")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productService.DeleteProductAsync(id);

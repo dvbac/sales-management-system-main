@@ -147,33 +147,27 @@ namespace SalesManagement.Web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                // Xử lý ảnh mới nếu có
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
-
-                    if (product.ProductImages == null) product.ProductImages = new List<ProductImage>();
-                    
-                    product.ProductImages.Add(new ProductImage
-                    {
-                        ProductId = product.ProductId,
-                        ImageUrl = "/images/" + fileName,
-                        IsPrimary = true,
-                        CreatedDate = DateTime.Now
-                    });
-                }
-
                 var result = await _productService.UpdateProductAsync(product);
                 if (result)
                 {
+                    // Xử lý ảnh mới nếu có
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(stream);
+                        }
+
+                        // Cập nhật database: Xóa ảnh cũ và gán ảnh mới làm ảnh chính
+                        await _productService.RemoveProductImagesAsync(product.ProductId);
+                        await _productService.AddProductImageAsync(product.ProductId, "/images/" + fileName, true);
+                    }
+
                     TempData["SuccessMessage"] = "Product updated successfully!";
                     return RedirectToAction(nameof(Index));
                 }

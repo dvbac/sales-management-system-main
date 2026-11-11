@@ -1,26 +1,34 @@
 @using SalesManagement.Web.Models
 @model ErrorViewModel
 @{
-    ViewData["Title"] = "L?i";
+    ViewData["Title"] = "Lỗi";
 }
 
-<h1 class="text-danger">L?i.</h1>
-<h2 class="text-danger">�� x?y ra l?i khi x? l� y�u c?u c?a b?n.</h2>
+<div class="container py-5 text-center my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-warning display-3"></i>
+                </div>
+                <h2 class="fw-bold text-danger mb-3">Đã xảy ra lỗi</h2>
+                <p class="text-muted mb-4">
+                    Hệ thống gặp sự cố khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.
+                </p>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>ID Y�u c?u:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+                @if (Model.ShowRequestId)
+                {
+                    <div class="alert alert-light border small text-muted mb-4">
+                        <strong>Mã yêu cầu (Request ID):</strong> <code>@Model.RequestId</code>
+                    </div>
+                }
 
-<h3>Ch? d? ph�t tri?n</h3>
-<p>
-    Chuy?n sang m�i tru?ng <strong>Development</strong> s? hi?n th? th�ng tin chi ti?t hon v? l?i d� x?y ra.
-</p>
-<p>
-    <strong>M�i tru?ng Development kh�ng n�n du?c k�ch ho?t cho c�c ?ng d?ng d� tri?n khai.</strong>
-    N� c� th? d?n d?n vi?c hi?n th? th�ng tin nh?y c?m t? c�c ngo?i l? cho ngu?i d�ng cu?i.
-    �? g? l?i c?c b?, h�y k�ch ho?t m�i tru?ng <strong>Development</strong> b?ng c�ch d?t bi?n m�i tru?ng <strong>ASPNETCORE_ENVIRONMENT</strong> th�nh <strong>Development</strong>
-    v� kh?i d?ng l?i ?ng d?ng.
-</p>
+                <div>
+                    <a href="/" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-house-door me-2"></i> Về trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

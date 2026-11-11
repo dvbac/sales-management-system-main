@@ -108,7 +108,19 @@ namespace SalesManagement.BLL.Services
             if (orderValue < (promo.MinOrderValue ?? 0))
                 return (false, $"Đơn hàng tối thiểu {(promo.MinOrderValue ?? 0):N0} VNĐ mới được áp dụng mã này.", 0);
 
-            decimal discount = promo.Value;
+            decimal discount = 0;
+            if (string.Equals(promo.DiscountType, "Percent", StringComparison.OrdinalIgnoreCase))
+            {
+                discount = orderValue * (promo.Value / 100m);
+                if (promo.MaxDiscountAmount.HasValue && promo.MaxDiscountAmount > 0)
+                {
+                    discount = Math.Min(discount, promo.MaxDiscountAmount.Value);
+                }
+            }
+            else
+            {
+                discount = promo.Value;
+            }
 
             // Đảm bảo giảm giá không vượt quá giá trị đơn hàng
             discount = Math.Min(discount, orderValue);
