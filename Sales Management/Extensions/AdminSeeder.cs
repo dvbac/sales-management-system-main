@@ -15,9 +15,9 @@ namespace SalesManagement.Web.Extensions
             using var scope = serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            // Read credentials from appsettings.json
-            var email    = configuration["DefaultAdmin:Email"]    ?? "admin@FUManagementSystem.org";
-            var password = configuration["DefaultAdmin:Password"] ?? "@@abc123@@";
+            // Read credentials from appsettings.json or use default
+            var email    = configuration["DefaultAdmin:Email"]    ?? "admin@salesmanager.com";
+            var password = configuration["DefaultAdmin:Password"] ?? "123456";
             var username = configuration["DefaultAdmin:Username"] ?? "admin";
             var fullName = configuration["DefaultAdmin:FullName"] ?? "System Administrator";
 
@@ -27,13 +27,9 @@ namespace SalesManagement.Web.Extensions
 
             if (existingAdmin != null)
             {
-                // Sync all configurable fields so appsettings.json is the single source of truth
-                existingAdmin.Email        = email;
-                existingAdmin.Username     = username;
-                existingAdmin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                existingAdmin.Role         = "Admin";
-                existingAdmin.IsActive     = true;
-                existingAdmin.UpdatedDate  = DateTime.Now;
+                // Giữ nguyên tài khoản admin, chỉ đảm bảo vai trò và trạng thái
+                existingAdmin.Role = "Admin";
+                existingAdmin.IsActive = true;
                 await db.SaveChangesAsync();
                 return;
             }
