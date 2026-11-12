@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SalesManagement.Web.Models;
 using SalesManagement.BLL.Interfaces;
-using SalesManagement.Web.Models;
 using Microsoft.Extensions.Logging;
 
 namespace SalesManagement.Web.Controllers
