@@ -71,7 +71,14 @@
                                 </div>
                             </td>
                             <td class="fw-semibold text-primary">
-                                <span>@item.Value.ToString("N0") ₫</span>
+                                @if (item.DiscountType == "Percent")
+                                {
+                                    <span>@item.Value.ToString("N0")%</span>
+                                }
+                                else
+                                {
+                                    <span>@item.Value.ToString("N0") ₫</span>
+                                }
                             </td>
                             <td>
                                 <div class="small">

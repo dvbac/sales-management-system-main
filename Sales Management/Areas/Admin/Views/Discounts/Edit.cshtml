@@ -48,10 +48,21 @@
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
-                        <input type="hidden" asp-for="DiscountType" value="Amount" />
                         <div class="col-md-6">
-                            <label asp-for="Value" class="form-label fw-semibold">Giá trị giảm (VNĐ)</label>
-                            <input asp-for="Value" class="form-control rounded-3" type="number" step="1" />
+                            <label asp-for="DiscountType" class="form-label fw-semibold">Loại giảm giá</label>
+                            <select asp-for="DiscountType" id="discountTypeSelect" class="form-select rounded-3">
+                                <option value="Percent">Theo phần trăm (%)</option>
+                                <option value="Amount">Theo số tiền cố định (VNĐ)</option>
+                            </select>
+                            <span asp-validation-for="DiscountType" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Value" id="valueLabel" class="form-label fw-semibold">Giá trị giảm</label>
+                            <div class="input-group">
+                                <input asp-for="Value" class="form-control rounded-start-3" type="number" step="any" required />
+                                <span class="input-group-text rounded-end-3" id="valueUnit">₫</span>
+                            </div>
                             <span asp-validation-for="Value" class="text-danger"></span>
                         </div>
 
@@ -87,4 +98,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function updateDiscountTypeUI() {
+            var select = document.getElementById('discountTypeSelect');
+            if (!select) return;
+            var isPercent = select.value === 'Percent';
+            var unit = document.getElementById('valueUnit');
+            var label = document.getElementById('valueLabel');
+            if (unit) unit.textContent = isPercent ? '%' : '₫';
+            if (label) label.textContent = isPercent ? 'Giá trị giảm (%)' : 'Giá trị giảm (VNĐ)';
+        }
+        document.getElementById('discountTypeSelect')?.addEventListener('change', updateDiscountTypeUI);
+        document.addEventListener('DOMContentLoaded', updateDiscountTypeUI);
+        updateDiscountTypeUI();
+    </script>
 }

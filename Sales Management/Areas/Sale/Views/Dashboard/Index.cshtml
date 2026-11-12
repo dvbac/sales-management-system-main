@@ -192,11 +192,13 @@
                     int rank = 1;
                     foreach (var item in topProducts)
                     {
+                        var prod = item.Product as SalesManagement.DAL.Entities.Product;
+                        var firstImg = prod?.ProductImages?.FirstOrDefault()?.ImageUrl;
                         <div class="top-product-item d-flex align-items-center mb-2">
                            <div class="product-img-wrapper me-3">
-                                @if (item.Product?.ProductImages != null && item.Product.ProductImages.Any())
+                                @if (!string.IsNullOrEmpty(firstImg))
                                 {
-                                    <img src="@item.Product.ProductImages.FirstOrDefault()?.ImageUrl" class="img-fluid rounded" alt="" style="object-fit: cover; width: 100%; height: 100%;">
+                                    <img src="@firstImg" class="img-fluid rounded" alt="" style="object-fit: cover; width: 100%; height: 100%;">
                                 }
                                 else
                                 {
@@ -204,7 +206,7 @@
                                 }
                            </div>
                            <div class="flex-grow-1 min-vw-0">
-                               <h6 class="mb-0 text-dark fw-bold text-truncate">@item.Product.Name</h6>
+                               <h6 class="mb-0 text-dark fw-bold text-truncate">@(prod?.Name ?? "Sản phẩm")</h6>
                                <div class="d-flex align-items-center mt-1">
                                    <span class="badge bg-light text-muted border-0 p-0 me-2 small">Top @(rank++)</span>
                                    <span class="text-muted extra-small" style="font-size: 0.75rem;">Đã bán: <b class="text-dark">@item.TotalSold</b></span>

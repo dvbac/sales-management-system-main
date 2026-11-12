@@ -14,3 +14,6 @@ obj/
 *.cache
 
 .fake
+
+# Documentation & Diagrams (local only)
+Docs/
